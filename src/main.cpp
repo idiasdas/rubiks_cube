@@ -19,18 +19,12 @@ int main(int argc, char *argv[])
     Model triangle;
     triangle.bind_array();
     // Create and compile our GLSL program from the shaders
-    Shader color_shader("shaders/fixed-color.vertexShader", "shaders/fixed-color.fragmentShader");
+    Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
     std::vector<float> triangle_buffer = {
-        -1.0f,
-        -1.0f,
-        0.0f,
-        1.0f,
-        -1.0f,
-        0.0f,
-        0.0f,
-        1.0f,
-        0.0f,
+        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
     };
 
     triangle.buffer_data(triangle_buffer);

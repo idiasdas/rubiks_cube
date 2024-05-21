@@ -39,8 +39,19 @@ void Model::buffer_data(std::vector<float> buffer)
         3,        // size
         GL_FLOAT, // type
         GL_FALSE, // normalized?
-        0,        // stride
+        6*sizeof(float), // stride
         (void *)0 // array buffer offset
+    );
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
+    glVertexAttribPointer(
+        1,        // attribute 0. No particular reason for 0, but must match the layout in the shader.
+        3,        // size
+        GL_FLOAT, // type
+        GL_FALSE, // normalized?
+        6*sizeof(float),        // stride
+        (void *)(3 * sizeof(float)) // array buffer offset
     );
 }
 
