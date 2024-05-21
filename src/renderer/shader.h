@@ -20,8 +20,8 @@ class Shader
 {
 public:
     Shader(const std::string& vertex_file_path, const std::string& fragment_file_path);
-    ~Shader();
-    void use_shader() const;
+    void bind() const;
+    void unbind() const;
 
 private:
     uint32_t m_renderer_ID;

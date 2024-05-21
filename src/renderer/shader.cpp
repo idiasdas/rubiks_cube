@@ -102,12 +102,12 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 	m_renderer_ID = program_ID;
 }
 
-Shader::~Shader()
-{
-	glDeleteProgram(m_renderer_ID);
-}
-
-void Shader::use_shader() const
+void Shader::bind() const
 {
 	glUseProgram(m_renderer_ID);
+}
+
+void Shader::unbind() const
+{
+	glUseProgram(0);
 }
