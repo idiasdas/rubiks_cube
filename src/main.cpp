@@ -11,14 +11,14 @@ int main(int argc, char *argv[])
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    GLuint VertexArrayID;
+    uint32_t VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders("shaders/fixed-color.vertexShader", "shaders/fixed-color.fragmentShader");
+    Shader color_shader("shaders/fixed-color.vertexShader", "shaders/fixed-color.fragmentShader");
 
-    static const GLfloat g_vertex_buffer_data[] = {
+    static const float g_vertex_buffer_data[] = {
         -1.0f,
         -1.0f,
         0.0f,
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         0.0f,
     };
 
-    GLuint vertexbuffer;
+    uint32_t vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Use our shader
-        glUseProgram(programID);
+        color_shader.use_shader();
 
         // 1rst attribute buffer : vertices
         glEnableVertexAttribArray(0);
@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
     // Cleanup VBO
     glDeleteBuffers(1, &vertexbuffer);
     glDeleteVertexArrays(1, &VertexArrayID);
-    glDeleteProgram(programID);
 
     // Close OpenGL window and terminate GLFW
     glfwTerminate();

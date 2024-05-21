@@ -16,4 +16,13 @@
 #define EXECUTABLE_UTILS_PATH ""
 #endif
 
-GLuint LoadShaders(std::string vertex_file_path, std::string fragment_file_path);
+class Shader
+{
+public:
+    Shader(const std::string& vertex_file_path, const std::string& fragment_file_path);
+    ~Shader();
+    void use_shader() const;
+
+private:
+    uint32_t m_renderer_ID;
+};
