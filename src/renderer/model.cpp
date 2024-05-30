@@ -27,6 +27,7 @@ void Model::unbind_buffer() const
 
 void Model::buffer_data(std::vector<float> buffer)
 {
+    glBindVertexArray(m_vertex_array_ID);
     m_buffer = buffer;
     glGenBuffers(1, &m_vertex_buffer_ID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);

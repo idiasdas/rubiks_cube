@@ -12,14 +12,7 @@ int main(int argc, char *argv[])
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    // uint32_t VertexArrayID;
-    // glGenVertexArrays(1, &VertexArrayID);
-    // glBindVertexArray(VertexArrayID);
-
     Model triangle;
-    triangle.bind_array();
-    // Create and compile our GLSL program from the shaders
-    Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
     std::vector<float> triangle_buffer = {
         -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -28,6 +21,8 @@ int main(int argc, char *argv[])
     };
 
     triangle.buffer_data(triangle_buffer);
+
+    Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
     do
     {
