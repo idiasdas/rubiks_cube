@@ -5,6 +5,9 @@
 #include "renderer/shader.h"
 #include "renderer/model.h"
 #include "renderer/builder.h"
+#include "renderer/camera.h"
+
+#include <glm/glm.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -23,16 +26,23 @@ int main(int argc, char *argv[])
     for (int i = 0; i < square_indices.size(); i++)
         square_indices[i] = i;
 
+
     square.buffer_indices(square_indices);
+    glm::mat4 initial_model_matrix(1);
+    square.set_model_matrix(initial_model_matrix);
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
+    Camera camera(context.get_window_handle(), glm::vec3(0.0f, 0.0f, 5.0f));
+
     do
     {
+        camera.update();
+
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT);
 
-        square.draw(color_shader);
+        square.draw(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * square.get_model_matrix());
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());

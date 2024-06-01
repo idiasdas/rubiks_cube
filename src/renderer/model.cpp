@@ -54,9 +54,11 @@ void Model::buffer_indices(std::vector<uint32_t> buffer)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::draw(Shader &shader)
+void Model::draw(Shader &shader, glm::mat4 MVP)
 {
     shader.bind();
+    uint32_t matrix_ID = shader.get_uniform_location("MVP");
+    glUniformMatrix4fv(matrix_ID, 1, GL_FALSE, &MVP[0][0]);
     glBindVertexArray(m_vertex_array_ID);
     glDrawElements(GL_TRIANGLES, m_index_buffer.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);

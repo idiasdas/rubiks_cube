@@ -32,6 +32,17 @@ OpenGLContext::OpenGLContext(const std::string& window_name, const int window_wi
 
     glfwMakeContextCurrent(m_window);
 
+    // Ensure we can capture the escape key being pressed below
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
+
+    // Hide the mouse and enable unlimited movement
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+
+    // Set the mouse at the center of the screen
+    glfwPollEvents();
+    glfwSetCursorPos(m_window, 1024/2, 768/2);
+
     // Initialize glad
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!status)
@@ -45,9 +56,8 @@ OpenGLContext::OpenGLContext(const std::string& window_name, const int window_wi
     std::cout << " - Renderer:  " << (const char *) glGetString(GL_RENDERER) << std::endl;
     std::cout << " - Version:   " << (const char *) glGetString(GL_VERSION) << std::endl;
 
-    // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    // Hide the mouse and enable unlimited movement
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    // Enable depth test
+	// glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it is closer to the camera than the former one
+	// glDepthFunc(GL_LESS);
 }
