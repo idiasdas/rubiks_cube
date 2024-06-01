@@ -13,19 +13,17 @@ int main(int argc, char *argv[])
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    // Model triangle;
-    // std::vector<float> triangle_buffer = {
-    //     -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-    //     1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //     0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    // };
-    // triangle.buffer_data(triangle_buffer);
-
     float color[3] = {1.0f, 0.0f, 0.0f};
     std::vector<float> square_buffer = get_piece(PieceType::center, &color);
 
     Model square;
-    square.buffer_data(square_buffer);
+    square.buffer_vertices(square_buffer);
+
+    std::vector<uint32_t> square_indices(square_buffer.size() / 6);
+    for (int i = 0; i < square_indices.size(); i++)
+        square_indices[i] = i;
+
+    square.buffer_indices(square_indices);
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 

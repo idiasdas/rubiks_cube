@@ -11,7 +11,8 @@ class Model
 public:
     Model();
 
-    void buffer_data(std::vector<float> buffer);
+    void buffer_vertices(std::vector<float> buffer);
+    void buffer_indices(std::vector<uint32_t> buffer);
     void draw(Shader& shader);
 private:
     uint32_t m_vertex_array_ID;

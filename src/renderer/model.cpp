@@ -5,7 +5,7 @@ Model::Model()
     glGenVertexArrays(1, &m_vertex_array_ID);
 }
 
-void Model::buffer_data(std::vector<float> buffer)
+void Model::buffer_vertices(std::vector<float> buffer)
 {
     glBindVertexArray(m_vertex_array_ID);
     m_vertex_buffer = buffer;
@@ -35,17 +35,22 @@ void Model::buffer_data(std::vector<float> buffer)
         (void *)(3 * sizeof(float)) // array buffer offset
     );
 
-    for (uint32_t i = 0; i < m_vertex_buffer.size() / 6; i++)
-        m_index_buffer.push_back(i);
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Model::buffer_indices(std::vector<uint32_t> buffer)
+{
+    glBindVertexArray(m_vertex_array_ID);
+    m_index_buffer = buffer;
 
     glCreateBuffers(1, &m_index_buffer_ID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer_ID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer.size()*sizeof(uint32_t), m_index_buffer.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(0);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
