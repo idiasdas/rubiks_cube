@@ -4,6 +4,7 @@
 #include "renderer/opengl-context.h"
 #include "renderer/shader.h"
 #include "renderer/model.h"
+#include "renderer/builder.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,15 +13,19 @@ int main(int argc, char *argv[])
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-    Model triangle;
+    // Model triangle;
+    // std::vector<float> triangle_buffer = {
+    //     -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+    //     1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    //     0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+    // };
+    // triangle.buffer_data(triangle_buffer);
 
-    std::vector<float> triangle_buffer = {
-        -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    };
+    float color[3] = {1.0f, 0.0f, 0.0f};
+    std::vector<float> square_buffer = get_piece(PieceType::center, &color);
 
-    triangle.buffer_data(triangle_buffer);
+    Model square;
+    square.buffer_data(square_buffer);
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
@@ -29,7 +34,7 @@ int main(int argc, char *argv[])
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT);
 
-        triangle.draw(color_shader);
+        square.draw(color_shader);
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());
