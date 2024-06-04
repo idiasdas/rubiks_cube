@@ -1,5 +1,7 @@
 #pragma once
 
+#include "opengl-context.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -7,10 +9,15 @@
 
 #define PI 3.14f
 
+enum class CameraConfig : int
+{
+    fly, debug
+};
+
 class Camera
 {
 private:
-    GLFWwindow* m_window;
+    OpenGLContext* m_OpenGL_context;
     float m_horizontal_angle;
     float m_vertical_angle;
     float m_FoV;
@@ -20,9 +27,10 @@ private:
     glm::mat4 m_view_matrix;
     glm::mat4 m_projection_matrix;
     glm::vec3 m_position;
+    CameraConfig m_config;
 
 public:
-    Camera(GLFWwindow* window, glm::vec3 position);
+    Camera(OpenGLContext* openGL_context, glm::vec3 position);
     glm::mat4 get_view_matrix() const { return m_view_matrix;}
     glm::mat4 get_projection_matrix() const { return m_projection_matrix;}
 

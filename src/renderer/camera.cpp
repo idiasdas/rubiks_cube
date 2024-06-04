@@ -1,14 +1,15 @@
 #include "camera.h"
 
-Camera::Camera(GLFWwindow *window, glm::vec3 position)
+Camera::Camera(OpenGLContext* openGL_context, glm::vec3 position)
 {
-    m_window = window;
+    m_OpenGL_context = openGL_context;
     m_position = position;
     m_horizontal_angle = PI;
     m_vertical_angle = 0.0f;
     m_FoV = 45.0f;
     m_speed = 3.0f;
     m_mouse_speed = 0.005f;
+    m_config = CameraConfig::fly;
 }
 
 void Camera::update()
@@ -20,12 +21,13 @@ void Camera::update()
     double current_time = glfwGetTime();
     float delta_time = float(current_time - last_time);
 
+
     // Get mouse position
     double xpos, ypos;
-    glfwGetCursorPos(m_window, &xpos, &ypos);
+    glfwGetCursorPos(m_OpenGL_context->get_window_handle(), &xpos, &ypos);
 
     // Reset mouse position for next frame
-    glfwSetCursorPos(m_window, 1024 / 2, 768 / 2);
+    glfwSetCursorPos(m_OpenGL_context->get_window_handle(), 1024 / 2, 768 / 2);
 
     // Compute new orientation
     m_horizontal_angle += m_mouse_speed * float(1024 / 2 - xpos);
@@ -51,22 +53,22 @@ void Camera::update()
     // Up vector
     glm::vec3 up = glm::cross(right, direction);
 
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_W) == GLFW_PRESS)
         m_position += direction * delta_time * m_speed;
 
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_S) == GLFW_PRESS)
         m_position -= direction * delta_time * m_speed;
 
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_D) == GLFW_PRESS)
         m_position += right * delta_time * m_speed;
 
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_A) == GLFW_PRESS)
         m_position -= right * delta_time * m_speed;
 
-    if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_SPACE) == GLFW_PRESS)
         m_position += up * delta_time * m_speed;
 
-    if (glfwGetKey(m_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    if (glfwGetKey(m_OpenGL_context->get_window_handle(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         m_position -= up * delta_time * m_speed;
 
     // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
