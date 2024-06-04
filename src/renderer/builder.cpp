@@ -59,7 +59,7 @@ std::vector<float> get_piece(PieceType piece_type, float color[][3])
     // add square facing y-axis with color[1]
     if (piece_type == PieceType::middle || piece_type == PieceType::corner)
     {
-        for (int i = 6; i < 3*12; i = i + 3)
+        for (int i = 3*6; i < 3*12; i = i + 3)
         {
             buffer.push_back(vertices_positions[i]);
             buffer.push_back(vertices_positions[i + 1]);
@@ -74,7 +74,7 @@ std::vector<float> get_piece(PieceType piece_type, float color[][3])
     // add square facing x-axis with color[2]
     if (piece_type == PieceType::corner)
     {
-        for (int i = 12; i < 3*18; i = i + 3)
+        for (int i = 3*12; i < 3*18; i = i + 3)
         {
             buffer.push_back(vertices_positions[i]);
             buffer.push_back(vertices_positions[i + 1]);
