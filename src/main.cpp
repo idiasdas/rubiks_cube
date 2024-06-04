@@ -13,11 +13,8 @@ int main(int argc, char *argv[])
 {
     OpenGLContext context("Rubik's Cube", 1280, 720);
 
-    // Dark blue background
-    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-    float color[3] = {1.0f, 0.0f, 0.0f};
-    std::vector<float> square_buffer = get_piece(PieceType::center, &color);
+    float colors[][3] = {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
+    std::vector<float> square_buffer = get_piece(PieceType::middle, colors);
 
     Model square;
     square.buffer_vertices(square_buffer);
@@ -33,7 +30,7 @@ int main(int argc, char *argv[])
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
-    Camera camera(context.get_window_handle(), glm::vec3(0.0f, 0.0f, 5.0f));
+    Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
 
     do
     {
