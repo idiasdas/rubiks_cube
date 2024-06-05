@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "shader.h"
 
@@ -17,6 +18,9 @@ public:
 
     glm::mat4 get_model_matrix() const { return m_model_matrix; }
     void set_model_matrix(glm::mat4 &matrix) { m_model_matrix = matrix; }
+
+    void rotate(float rotation_degree, glm::vec3 rotation_axis);
+    void translate(glm::vec3 translation_vector);
 
 private:
     uint32_t m_vertex_array_ID;

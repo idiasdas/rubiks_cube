@@ -3,6 +3,7 @@
 Model::Model()
 {
     glGenVertexArrays(1, &m_vertex_array_ID);
+    m_model_matrix = glm::mat4(1);
 }
 
 void Model::buffer_vertices(std::vector<float> buffer)
@@ -62,4 +63,14 @@ void Model::draw(Shader &shader, glm::mat4 MVP)
     glBindVertexArray(m_vertex_array_ID);
     glDrawElements(GL_TRIANGLES, m_index_buffer.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+}
+
+void Model::rotate(float rotation_degree, glm::vec3 rotation_axis)
+{
+    m_model_matrix = glm::rotate(m_model_matrix, rotation_degree, rotation_axis);
+}
+
+void Model::translate(glm::vec3 translation_vector)
+{
+    m_model_matrix = glm::translate(m_model_matrix, translation_vector);
 }
