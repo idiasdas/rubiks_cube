@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         camera.update();
 
         // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         square.draw(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * square.get_model_matrix());
 

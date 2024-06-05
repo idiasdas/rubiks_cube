@@ -56,8 +56,11 @@ OpenGLContext::OpenGLContext(const std::string& window_name, const int window_wi
     std::cout << " - Renderer:  " << (const char *) glGetString(GL_RENDERER) << std::endl;
     std::cout << " - Version:   " << (const char *) glGetString(GL_VERSION) << std::endl;
 
+    // Dark blue background
+    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
     // Enable depth test
-	// glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	// Accept fragment if it is closer to the camera than the former one
-	// glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 }
