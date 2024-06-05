@@ -1,90 +1,65 @@
 #include "builder.h"
 
 /*
-    This function returns the 3 different types of pieces in the rubik's cube:
-        - center: one square facing the z-axis
-        - middle: one square facing the z-axis + one square facing the y-axis
-        - corner: one square facing the z-axis + one square facing the y-axis + one square facing the x-axis
-
-    The output vector contain each vertex xyz coordinates followed by its corresponding color.
-
-    ABCD -> cube's front face
-    EFGH -> cube's back face
-
-            E----F
-    A----B  |    |
-    |    |  G----H
-    C----D
+    colors = {z_axis_face, y_axis_face, x_axis_face, - z_axis_face, - y_axis_face, - x_axis_face}
 */
-std::vector<float> get_piece(PieceType piece_type, float color[][3])
+Model get_piece(float (*colors)[3], glm::vec3 position)
 {
-    std::vector<float> vertices_positions = {
-        // square facing z-axis
-        -1.0f,  1.0f,  1.0f, //A
-         1.0f,  1.0f,  1.0f, //B
-        -1.0f, -1.0f,  1.0f, //C
-         1.0f,  1.0f,  1.0f, //B
-        -1.0f, -1.0f,  1.0f, //C
-         1.0f, -1.0f,  1.0f, //D
-        // square facing y-axis
-        -1.0f,  1.0f,  1.0f, //A
-         1.0f,  1.0f,  1.0f, //B
-        -1.0f,  1.0f, -1.0f, //E
-         1.0f,  1.0f,  1.0f, //B
-        -1.0f,  1.0f, -1.0f, //E
-         1.0f,  1.0f, -1.0f, //F
-        // square facing x-axis
-         1.0f,  1.0f,  1.0f, //B
-         1.0f, -1.0f,  1.0f, //D
-         1.0f,  1.0f, -1.0f, //F
-         1.0f, -1.0f,  1.0f, //D
-         1.0f,  1.0f, -1.0f, //F
-         1.0f, -1.0f, -1.0f, //D
+
+    Model piece;
+
+    std::vector<float> buffer = {
+        // square facing x axis
+        VB, colors[0][0], colors[0][1], colors[0][2],
+        VD, colors[0][0], colors[0][1], colors[0][2],
+        VF, colors[0][0], colors[0][1], colors[0][2],
+        VD, colors[0][0], colors[0][1], colors[0][2],
+        VF, colors[0][0], colors[0][1], colors[0][2],
+        VH, colors[0][0], colors[0][1], colors[0][2],
+        // square facing y axis
+        VA, colors[1][0], colors[1][1], colors[1][2],
+        VB, colors[1][0], colors[1][1], colors[1][2],
+        VE, colors[1][0], colors[1][1], colors[1][2],
+        VB, colors[1][0], colors[1][1], colors[1][2],
+        VE, colors[1][0], colors[1][1], colors[1][2],
+        VF, colors[1][0], colors[1][1], colors[1][2],
+        // square facing z axis
+        VA, colors[2][0], colors[2][1], colors[2][2],
+        VB, colors[2][0], colors[2][1], colors[2][2],
+        VC, colors[2][0], colors[2][1], colors[2][2],
+        VB, colors[2][0], colors[2][1], colors[2][2],
+        VC, colors[2][0], colors[2][1], colors[2][2],
+        VD, colors[2][0], colors[2][1], colors[2][2],
+        // square facing - x axis
+        VA, colors[3][0], colors[3][1], colors[3][2],
+        VE, colors[3][0], colors[3][1], colors[3][2],
+        VC, colors[3][0], colors[3][1], colors[3][2],
+        VE, colors[3][0], colors[3][1], colors[3][2],
+        VC, colors[3][0], colors[3][1], colors[3][2],
+        VG, colors[3][0], colors[3][1], colors[3][2],
+        // square facing - y axis
+        VC, colors[4][0], colors[4][1], colors[4][2],
+        VG, colors[4][0], colors[4][1], colors[4][2],
+        VD, colors[4][0], colors[4][1], colors[4][2],
+        VG, colors[4][0], colors[4][1], colors[4][2],
+        VD, colors[4][0], colors[4][1], colors[4][2],
+        VH, colors[4][0], colors[4][1], colors[4][2],
+        // square facing - z axis
+        VE, colors[5][0], colors[5][1], colors[5][2],
+        VF, colors[5][0], colors[5][1], colors[5][2],
+        VG, colors[5][0], colors[5][1], colors[5][2],
+        VF, colors[5][0], colors[5][1], colors[5][2],
+        VG, colors[5][0], colors[5][1], colors[5][2],
+        VH, colors[5][0], colors[5][1], colors[5][2],
     };
 
-    std::vector<float> buffer;
+    std::vector<uint32_t> indices;
+    for (int i = 0; i < buffer.size(); i++)
+        indices.push_back(i);
 
-    // add square facing z-axis to buffer with color[0]
-    for (int i = 0; i < 3*6; i = i + 3)
-    {
-        buffer.push_back(vertices_positions[i]);
-        buffer.push_back(vertices_positions[i + 1]);
-        buffer.push_back(vertices_positions[i + 2]);
+    piece.buffer_vertices(buffer);
+    piece.buffer_indices(indices);
+    piece.translate(position);
 
-        buffer.push_back(color[0][0]);
-        buffer.push_back(color[0][1]);
-        buffer.push_back(color[0][2]);
-    }
-
-    // add square facing y-axis with color[1]
-    if (piece_type == PieceType::middle || piece_type == PieceType::corner)
-    {
-        for (int i = 3*6; i < 3*12; i = i + 3)
-        {
-            buffer.push_back(vertices_positions[i]);
-            buffer.push_back(vertices_positions[i + 1]);
-            buffer.push_back(vertices_positions[i + 2]);
-
-            buffer.push_back(color[1][0]);
-            buffer.push_back(color[1][1]);
-            buffer.push_back(color[1][2]);
-        }
-    }
-
-    // add square facing x-axis with color[2]
-    if (piece_type == PieceType::corner)
-    {
-        for (int i = 3*12; i < 3*18; i = i + 3)
-        {
-            buffer.push_back(vertices_positions[i]);
-            buffer.push_back(vertices_positions[i + 1]);
-            buffer.push_back(vertices_positions[i + 2]);
-
-            buffer.push_back(color[2][0]);
-            buffer.push_back(color[2][1]);
-            buffer.push_back(color[2][2]);
-        }
-    }
-
-    return buffer;
+    return piece;
 }
