@@ -1,13 +1,13 @@
 #pragma once
 
-#include "opengl-context.h"
+#include "rubiks_cube.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define PI 3.14f
+#include "opengl-context.h"
 
 enum class CameraConfig : int
 {
