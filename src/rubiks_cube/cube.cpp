@@ -13,6 +13,7 @@ Cube::Cube()
     m_pieces.push_back(get_piece({BLACK, WHITE, BLACK, GREEN, BLACK, ORANGE},   {-3.0f, 0.0f, -6.0f}));
     m_pieces.push_back(get_piece({BLACK, WHITE, BLACK, BLACK, BLACK, ORANGE},   {0.0f,  0.0f, -6.0f}));
     m_pieces.push_back(get_piece({BLUE, WHITE, BLACK, BLACK, BLACK, ORANGE},    {3.0f,  0.0f, -6.0f}));
+
     // middle layer
 
     m_pieces.push_back(get_piece({BLACK, BLACK, RED, GREEN, BLACK, BLACK},      {-3.0f, -3.0f,  0.0f}));
@@ -24,6 +25,7 @@ Cube::Cube()
     m_pieces.push_back(get_piece({BLACK, BLACK, BLACK, GREEN, BLACK, ORANGE},   {-3.0f, -3.0f, -6.0f}));
     m_pieces.push_back(get_piece({BLACK, BLACK, BLACK, BLACK, BLACK, ORANGE},   {0.0f,  -3.0f, -6.0f}));
     m_pieces.push_back(get_piece({BLUE, BLACK, BLACK, BLACK, BLACK, ORANGE},    {3.0f,  -3.0f, -6.0f}));
+  
     // bottom layer
 
     m_pieces.push_back(get_piece({BLACK, BLACK, RED, GREEN, YELLOW, BLACK},     {-3.0f, -6.0f,  0.0f}));
