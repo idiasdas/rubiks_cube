@@ -3,7 +3,7 @@
 /*
     colors = {z_axis_face, y_axis_face, x_axis_face, - z_axis_face, - y_axis_face, - x_axis_face}
 */
-Model get_piece(float (*colors)[3], glm::vec3 position)
+Model get_piece(const float (& colors)[][3], glm::vec3 position)
 {
 
     Model piece;
