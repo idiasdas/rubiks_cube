@@ -9,10 +9,10 @@ Model::Model()
 void Model::buffer_vertices(std::vector<float> buffer)
 {
     glBindVertexArray(m_vertex_array_ID);
-    m_vertex_buffer = buffer;
+    // m_vertex_buffer = buffer;
     glCreateBuffers(1, &m_vertex_buffer_ID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
-    glBufferData(GL_ARRAY_BUFFER, m_vertex_buffer.size() * sizeof(float), &m_vertex_buffer[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), &buffer[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);

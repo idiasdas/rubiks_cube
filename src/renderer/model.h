@@ -27,7 +27,7 @@ private:
     uint32_t m_vertex_buffer_ID;
     uint32_t m_index_buffer_ID;
 
-    std::vector<float> m_vertex_buffer;
+    // std::vector<float> m_vertex_buffer;
     std::vector<uint32_t> m_index_buffer;
 
     glm::mat4 m_model_matrix;
