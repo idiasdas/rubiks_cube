@@ -7,7 +7,7 @@ Model get_piece(const float (& colors)[][3], glm::vec3 position)
 {
     Model piece;
 
-    std::vector<float> buffer = {
+    const std::vector<float> buffer = {
         // square facing x axis
         VB, colors[0][0], colors[0][1], colors[0][2],
         VD, colors[0][0], colors[0][1], colors[0][2],
