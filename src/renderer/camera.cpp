@@ -7,7 +7,7 @@ Camera::Camera(OpenGLContext *openGL_context, glm::vec3 position)
     m_horizontal_angle = PI;
     m_vertical_angle = 0.0f;
     m_FoV = 45.0f;
-    m_speed = 3.0f;
+    m_speed = 15.0f;
     m_mouse_speed = 0.005f;
     m_config = CameraConfig::fly;
 }
