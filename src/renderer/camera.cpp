@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(OpenGLContext* openGL_context, glm::vec3 position)
+Camera::Camera(OpenGLContext *openGL_context, glm::vec3 position)
 {
     m_OpenGL_context = openGL_context;
     m_position = position;
@@ -14,13 +14,11 @@ Camera::Camera(OpenGLContext* openGL_context, glm::vec3 position)
 
 void Camera::update()
 {
-    // glfwGetTime is called only once, the first time this function is called
     static double last_time = glfwGetTime();
 
     // Compute time difference between current and last frame
     double current_time = glfwGetTime();
     float delta_time = float(current_time - last_time);
-
 
     // Get mouse position
     double xpos, ypos;
@@ -73,13 +71,11 @@ void Camera::update()
 
     // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
     m_projection_matrix = glm::perspective(glm::radians(m_FoV), 4.0f / 3.0f, 0.1f, 100.0f);
-    // Camera matrix
     m_view_matrix = glm::lookAt(
         m_position,             // Camera is here
         m_position + direction, // and looks here : at the same position, plus "direction"
         up                      // Head is up (set to 0,-1,0 to look upside-down)
     );
 
-    // For the next frame, the "last time" will be "now"
     last_time = current_time;
 }

@@ -5,7 +5,6 @@
 */
 Model get_piece(const float (& colors)[][3], glm::vec3 position)
 {
-
     Model piece;
 
     std::vector<float> buffer = {

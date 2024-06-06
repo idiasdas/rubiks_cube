@@ -11,13 +11,14 @@
 
 enum class CameraConfig : int
 {
-    fly, debug
+    fly,
+    debug
 };
 
 class Camera
 {
 private:
-    OpenGLContext* m_OpenGL_context;
+    OpenGLContext *m_OpenGL_context;
     float m_horizontal_angle;
     float m_vertical_angle;
     float m_FoV;
@@ -30,9 +31,9 @@ private:
     CameraConfig m_config;
 
 public:
-    Camera(OpenGLContext* openGL_context, glm::vec3 position);
-    glm::mat4 get_view_matrix() const { return m_view_matrix;}
-    glm::mat4 get_projection_matrix() const { return m_projection_matrix;}
+    Camera(OpenGLContext *openGL_context, glm::vec3 position);
+    glm::mat4 get_view_matrix() const { return m_view_matrix; }
+    glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
 
     void update();
 };
