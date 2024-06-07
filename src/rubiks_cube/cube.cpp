@@ -11,7 +11,6 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
 
     float step = m_piece_size + m_piece_gap;
 
-    Model piece;
     float piece_colors[6][3];
     for (int x = -1; x <= 1; x++)
     {
