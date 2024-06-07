@@ -5,7 +5,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
     m_piece_size = piece_size;
     m_piece_gap = gap_size;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
             m_colors[i][j] = colors[i][j];
 
@@ -15,7 +15,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
     float piece_colors[6][3];
     for (int x = -1; x <= 1; x++)
     {
-        for (int z = 1; z >= 1; z--)
+        for (int z = 1; z >= -1; z--)
         {
             for (int y = 1; y >= -1; y--)
             {
@@ -29,7 +29,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
 void Cube::set_piece_colors(float x, float y, float z, float (&colors)[6][3])
 {
     // set all faces to black
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
             colors[i][j] = 0.0f;
 
@@ -41,7 +41,7 @@ void Cube::set_piece_colors(float x, float y, float z, float (&colors)[6][3])
     // color piece left face
     else if (x == -1)
         for (int i = 0; i < 3; i++)
-            colors[3][FaceIndex::left] = m_colors[FaceIndex::left][i];
+            colors[FaceIndex::left][i] = m_colors[FaceIndex::left][i];
 
     // color piece up face
     if (y == 1)
@@ -125,6 +125,8 @@ Model Cube::get_piece(const float (& colors)[][3], glm::vec3 position)
 
     piece.buffer_vertices(buffer);
     piece.buffer_indices(indices);
+
+    // TODO: Scale piece with m_piece_size
     piece.translate(position);
 
     return piece;

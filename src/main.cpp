@@ -7,17 +7,14 @@
 #include "renderer/shader.h"
 #include "renderer/model.h"
 #include "renderer/camera.h"
-
-#include "rubiks_cube/builder.h"
 #include "rubiks_cube/cube.h"
-
-#include <glm/glm.hpp>
 
 int main(int argc, char *argv[])
 {
     OpenGLContext context("Rubik's Cube", 1280, 720);
 
-    Cube cube;
+    Cube cube(2.0f, 0.5f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
+
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
 
     Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
