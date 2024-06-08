@@ -74,3 +74,18 @@ Currently, this project renders a rubiks cube that you can control and fly aroun
 |Left Shift + NumPad 6| Rotate cube's right face counter-clockwise|
 |Left Shift + NumPad 5| Rotate cube's front face counter-clockwise|
 |Left Shift + NumPad 0| Rotate cube's back face counter-clockwise|
+
+# Goals
+
+- [x] Render Cube
+- [x] Fly around
+- [x] Move pieces
+- [ ] Movement animation
+- [ ] Animation queue
+- [ ] Dynamic resize
+- [ ] Event system
+- [ ] Log system
+- [ ] ImGui control and debug window
+- [ ] Varying move animation speed
+- [ ] GIF generator
+- [ ] Solver
