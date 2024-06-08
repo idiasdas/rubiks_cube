@@ -20,6 +20,9 @@ void Camera::update()
     double current_time = glfwGetTime();
     float delta_time = float(current_time - last_time);
 
+    if (delta_time < 1.f / 60.f)
+        return;
+
     // Get mouse position
     double xpos, ypos;
     glfwGetCursorPos(m_OpenGL_context->get_window_handle(), &xpos, &ypos);
