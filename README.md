@@ -68,12 +68,7 @@ Currently, this project renders a rubiks cube that you can control and fly aroun
 |NumPad 6| Rotate right face clockwise|
 |NumPad 5| Rotate front face clockwise|
 |NumPad 0| Rotate back face clockwise|
-|Left Shift + NumPad 2| Rotate down face counterclockwise|
-|Left Shift + NumPad 8| Rotate up face counterclockwise|
-|Left Shift + NumPad 4| Rotate left face counterclockwise|
-|Left Shift + NumPad 6| Rotate right face counterclockwise|
-|Left Shift + NumPad 5| Rotate front face counterclockwise|
-|Left Shift + NumPad 0| Rotate back face counterclockwise|
+|Left Shift + NumPad 0, 2, 4, 5, 6, 8 | Rotate face counterclockwise|
 
 # Goals
 
@@ -89,3 +84,4 @@ Currently, this project renders a rubiks cube that you can control and fly aroun
 - [ ] Varying move animation speed
 - [ ] GIF generator
 - [ ] Solver
+- [ ] Select cubes through camera's view vector
