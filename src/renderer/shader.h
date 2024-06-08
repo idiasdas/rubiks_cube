@@ -19,6 +19,12 @@
 class Shader
 {
 public:
+
+    /*
+        Loads and compiles the vertex and fragment shaders.
+        Any erros end the program execution.
+        The files path must be relative to the `utils/` directory.
+    */
     Shader(const std::string& vertex_file_path, const std::string& fragment_file_path);
     void bind() const;
     void unbind() const;

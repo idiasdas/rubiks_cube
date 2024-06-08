@@ -31,9 +31,18 @@ private:
     CameraConfig m_config;
 
 public:
+    /*
+        Needs the GLFWwindow *window handle to read inputs and update the camera position.
+        As the camera moves, it updates the View and Projection matrices used to build the MVP for the OpenGL draw.
+    */
     Camera(OpenGLContext *const openGL_context, const glm::vec3 &position);
+
     glm::mat4 get_view_matrix() const { return m_view_matrix; }
     glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
 
+    /*
+        Reads the keyboard inputs from GLFW and updates the camera position accordingly.
+        Check the README.md for a description of the commands and corresponding actions.
+    */
     void read_controls();
 };

@@ -12,6 +12,7 @@ public:
     /*
         Initializes GLFW, creates a window, makes window the current OpenGL context, loads OpenGL with glad.
         Exits with EXIT_FAILURE if any errors occur.
+        Every interaction with GLFW requires the GLFWwindow* m_window.
     */
     OpenGLContext(const std::string& window_name, const int window_width, const int window_height);
 

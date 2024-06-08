@@ -17,9 +17,26 @@ enum Face
 class Cube
 {
 public:
+    /*
+        Creates the cube. Each piece is a model loaded on the GPU.
+    */
     Cube(const float piece_size, const float gap_size, const float (&colors)[6][3]);
+
+    /*
+        Calls OpenGL draw for each piece.
+    */
     void draw(const Shader &shader, const Camera &camera) const;
+
+    /*
+        Updates the vector m_state with the new pieces positions.
+        Applies the clockwise rotation and translation to the pieces moved.
+        Every rotation is clockwise for now.
+    */
     void rotate_face(const Face face_index, const int turns);
+
+    /*
+        Reades the keyboard inputs from OpenGL and apply the corresponding moves to the cube.
+    */
     void read_controls(OpenGLContext *const openGL_context);
 
 private:
