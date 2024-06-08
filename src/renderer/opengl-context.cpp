@@ -33,7 +33,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glfwMakeContextCurrent(m_window);
 
     // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);
 
     // Hide the mouse and enable unlimited movement
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
