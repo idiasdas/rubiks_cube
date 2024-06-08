@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(OpenGLContext *openGL_context, glm::vec3 position)
+Camera::Camera(OpenGLContext *const openGL_context, const glm::vec3 &position)
 {
     m_OpenGL_context = openGL_context;
     m_position = position;
@@ -12,7 +12,7 @@ Camera::Camera(OpenGLContext *openGL_context, glm::vec3 position)
     m_config = CameraConfig::fly;
 }
 
-void Camera::update()
+void Camera::read_controls()
 {
     static double last_time = glfwGetTime();
 

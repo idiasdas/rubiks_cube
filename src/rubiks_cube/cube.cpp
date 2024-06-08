@@ -67,12 +67,9 @@ void Cube::set_piece_colors(float x, float y, float z, float (&colors)[6][3])
 
 std::tuple<float, float, float> Cube::get_piece_coordinates(const int piece_state_index) const
 {
-    float y = piece_state_index / 9;
-    float z = piece_state_index % 9 / 3;
-    float x = piece_state_index % 9 % 3;
-    y = (y - 1)*-1;
-    z = (z - 1)*-1;
-    x = (x - 1);
+    const float y = -piece_state_index / 9 + 1;
+    const float z = -piece_state_index % 9 / 3 + 1;
+    const float x =  piece_state_index % 9 % 3 - 1;
     return std::make_tuple(x, y, z);
 }
 
@@ -188,5 +185,59 @@ void Cube::rotate_face(const Face face_index, const int turns)
             m_pieces[m_state[piece_state_index]].rotate(rotation_degrees, axis_sign * face_axis);
             m_pieces[m_state[piece_state_index]].translate(piece_position);
         }
+    }
+}
+
+void Cube::read_controls(OpenGLContext *const openGL_context)
+{
+    static double last_time = glfwGetTime();
+    double cur_time = glfwGetTime();
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_5) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::front, 3);
+        else
+            rotate_face(Face::front, 1);
+    }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_6) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::right, 3);
+        else
+            rotate_face(Face::right, 1);
+    }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_4) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::left, 3);
+        else
+            rotate_face(Face::left, 1);
+    }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_0) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::back, 3);
+        else
+            rotate_face(Face::back, 1);
+    }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_8) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::top, 3);
+        else
+            rotate_face(Face::top, 1);
+    }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_2) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    {
+        last_time = cur_time;
+        if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+            rotate_face(Face::bottom, 3);
+        else
+            rotate_face(Face::bottom, 1);
     }
 }

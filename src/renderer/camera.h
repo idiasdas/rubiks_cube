@@ -31,9 +31,9 @@ private:
     CameraConfig m_config;
 
 public:
-    Camera(OpenGLContext *openGL_context, glm::vec3 position);
+    Camera(OpenGLContext *const openGL_context, const glm::vec3 &position);
     glm::mat4 get_view_matrix() const { return m_view_matrix; }
     glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
 
-    void update();
+    void read_controls();
 };
