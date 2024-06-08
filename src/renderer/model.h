@@ -12,23 +12,32 @@ class Model
 {
 public:
     Model();
-    void buffer_vertices(std::vector<float> buffer);
-    void buffer_indices(std::vector<uint32_t> buffer);
-    void draw(Shader &shader, glm::mat4 MVP);
+    void buffer_vertices(const std::vector<float> buffer);
+    void buffer_indices(const std::vector<uint32_t> buffer);
+    void draw(const Shader &shader, const glm::mat4 MVP) const;
 
-    glm::mat4 get_model_matrix() const { return m_model_matrix; }
-    void set_model_matrix(glm::mat4 &matrix) { m_model_matrix = matrix; }
+    glm::mat4 get_model_matrix() const { return m_translation_matrix * m_rotation_matrix * m_scale_matrix; }
 
-    void rotate(float rotation_degree, glm::vec3 rotation_axis);
-    void translate(glm::vec3 translation_vector);
+    void scale(const glm::vec3& scale_vector);
+    void rotate(const float rotation_degree, const glm::vec3& rotation_axis);
+    void translate(const glm::vec3& translation_vector);
+
+    void set_scale_matrix(const glm::mat4& scale_matrix) { m_scale_matrix = scale_matrix;}
+    void set_rotation_matrix(const glm::mat4& rotation_matrix) { m_rotation_matrix = rotation_matrix;}
+    void set_translation_matrix(const glm::mat4& translation_matrix) { m_translation_matrix = translation_matrix;}
+
+    glm::mat4 get_scale_matrix() const { return m_scale_matrix;}
+    glm::mat4 get_rotation_matrix() const { return m_rotation_matrix;}
+    glm::mat4 get_translation_matrix() const { return m_translation_matrix;}
 
 private:
     uint32_t m_vertex_array_ID;
     uint32_t m_vertex_buffer_ID;
     uint32_t m_index_buffer_ID;
 
-    // std::vector<float> m_vertex_buffer;
     std::vector<uint32_t> m_index_buffer;
 
-    glm::mat4 m_model_matrix;
+    glm::mat4 m_scale_matrix;
+    glm::mat4 m_rotation_matrix;
+    glm::mat4 m_translation_matrix;
 };

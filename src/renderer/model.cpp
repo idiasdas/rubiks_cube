@@ -3,10 +3,12 @@
 Model::Model()
 {
     glGenVertexArrays(1, &m_vertex_array_ID);
-    m_model_matrix = glm::mat4(1);
+    m_scale_matrix = glm::mat4(1);
+    m_rotation_matrix = glm::mat4(1);
+    m_translation_matrix = glm::mat4(1);
 }
 
-void Model::buffer_vertices(std::vector<float> buffer)
+void Model::buffer_vertices(const std::vector<float> buffer)
 {
     glBindVertexArray(m_vertex_array_ID);
     // m_vertex_buffer = buffer;
@@ -42,11 +44,11 @@ void Model::buffer_vertices(std::vector<float> buffer)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Model::buffer_indices(std::vector<uint32_t> buffer)
+void Model::buffer_indices(const std::vector<uint32_t> buffer)
 {
-    glBindVertexArray(m_vertex_array_ID);
     m_index_buffer = buffer;
 
+    glBindVertexArray(m_vertex_array_ID);
     glCreateBuffers(1, &m_index_buffer_ID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer_ID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer.size() * sizeof(uint32_t), m_index_buffer.data(), GL_STATIC_DRAW);
@@ -55,7 +57,7 @@ void Model::buffer_indices(std::vector<uint32_t> buffer)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::draw(Shader &shader, glm::mat4 MVP)
+void Model::draw(const Shader &shader, const glm::mat4 MVP) const
 {
     shader.bind();
     uint32_t matrix_ID = shader.get_uniform_location("MVP");
@@ -65,12 +67,17 @@ void Model::draw(Shader &shader, glm::mat4 MVP)
     glBindVertexArray(0);
 }
 
-void Model::rotate(float rotation_degree, glm::vec3 rotation_axis)
+void Model::scale(const glm::vec3& scale_vector)
 {
-    m_model_matrix = glm::rotate(m_model_matrix, rotation_degree, rotation_axis);
+    m_scale_matrix = glm::translate(m_scale_matrix, scale_vector);
 }
 
-void Model::translate(glm::vec3 translation_vector)
+void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis)
 {
-    m_model_matrix = glm::translate(m_model_matrix, translation_vector);
+    m_rotation_matrix = glm::rotate(glm::mat4(1), rotation_degree, rotation_axis) * m_rotation_matrix;
+}
+
+void Model::translate(const glm::vec3& translation_vector)
+{
+    m_translation_matrix = glm::translate(m_translation_matrix, translation_vector);
 }
