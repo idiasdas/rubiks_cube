@@ -10,16 +10,18 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
             m_colors[i][j] = colors[i][j];
 
     float step = m_piece_size + m_piece_gap;
-
+    int piece_count = 0;
     float piece_colors[6][3];
-    for (int x = -1; x <= 1; x++)
+    for (int y = 1; y >= -1; y--)
     {
         for (int z = 1; z >= -1; z--)
         {
-            for (int y = 1; y >= -1; y--)
+            for (int x = -1; x <= 1; x++)
             {
                 set_piece_colors(x, y, z, piece_colors);
                 m_pieces.push_back(get_piece(piece_colors, glm::vec3(x * step, y * step, z * step)));
+                std::cout << piece_count << "(" << x << ", " << y << ", " << z << ")\n";
+                m_state[piece_count++] = piece_count;
             }
         }
     }
