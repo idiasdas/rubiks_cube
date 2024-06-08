@@ -37,41 +37,46 @@ void Cube::set_piece_colors(float x, float y, float z, float (&colors)[6][3])
     // color piece right face
     if (x == 1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::right][i] = m_colors[FaceIndex::right][i];
+            colors[Face::right][i] = m_colors[Face::right][i];
 
     // color piece left face
     else if (x == -1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::left][i] = m_colors[FaceIndex::left][i];
+            colors[Face::left][i] = m_colors[Face::left][i];
 
     // color piece up face
     if (y == 1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::up][i] = m_colors[FaceIndex::up][i];
+            colors[Face::top][i] = m_colors[Face::top][i];
 
     // color piece down face
     else if (y == -1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::down][i] = m_colors[FaceIndex::down][i];
+            colors[Face::bottom][i] = m_colors[Face::bottom][i];
 
     // color piece front face
     if (z == 1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::front][i] = m_colors[FaceIndex::front][i];
+            colors[Face::front][i] = m_colors[Face::front][i];
 
     // color piece back face
     else if (z == -1)
         for (int i = 0; i < 3; i++)
-            colors[FaceIndex::back][i] = m_colors[FaceIndex::back][i];
+            colors[Face::back][i] = m_colors[Face::back][i];
 }
 
-void Cube::draw(Shader &shader, Camera &camera) const
+std::tuple<float, float, float> Cube::get_piece_coordinates(const int piece_state_index) const
 {
-    for (Model piece : m_pieces)
-        piece.draw(shader, camera.get_projection_matrix() * camera.get_view_matrix() * piece.get_model_matrix());
+    float y = piece_state_index / 9;
+    float z = piece_state_index % 9 / 3;
+    float x = piece_state_index % 9 % 3;
+    y = (y - 1)*-1;
+    z = (z - 1)*-1;
+    x = (x - 1);
+    return std::make_tuple(x, y, z);
 }
 
-Model Cube::get_piece(const float (& colors)[][3], glm::vec3 position)
+Model Cube::get_piece(const float (& colors)[][3], const glm::vec3 position)
 {
     Model piece;
 
@@ -131,4 +136,57 @@ Model Cube::get_piece(const float (& colors)[][3], glm::vec3 position)
     piece.translate(position);
 
     return piece;
+}
+
+void Cube::draw(const Shader &shader, const Camera &camera) const
+{
+    for (Model piece : m_pieces)
+        piece.draw(shader, camera.get_projection_matrix() * camera.get_view_matrix() * piece.get_model_matrix());
+}
+
+void Cube::rotate_face(const Face face_index, const int turns)
+{
+    const float rotation_degrees = - turns * PI / 2.f;
+    const int faces[6][3][3] = {RIGHT_FACE, TOP_FACE, FRONT_FACE, LEFT_FACE, BOTTOM_FACE, BACK_FACE};
+
+    const int rotation_sign = (face_index < 3) ? -1 : 1;
+
+    // change cube state
+    for (int i = 0; i < turns; i++)
+    {
+        // rotate corners on state vector in 90 degrees clockwise
+        int swap_piece_i = m_state[faces[face_index][2][0]];
+        std::swap(m_state[faces[face_index][0][0]], swap_piece_i);
+        std::swap(m_state[faces[face_index][0][2]], swap_piece_i);
+        std::swap(m_state[faces[face_index][2][2]], swap_piece_i);
+        std::swap(m_state[faces[face_index][2][0]], swap_piece_i);
+        //rotate middle pieces on state vector in 90 degrees clockwise
+        swap_piece_i = m_state[faces[face_index][1][0]];
+        std::swap(m_state[faces[face_index][0][1]], swap_piece_i);
+        std::swap(m_state[faces[face_index][1][2]], swap_piece_i);
+        std::swap(m_state[faces[face_index][2][1]], swap_piece_i);
+        std::swap(m_state[faces[face_index][1][0]], swap_piece_i);
+    }
+
+    const glm::vec3 axis[6] = {X_AXIS, Y_AXIS, Z_AXIS, X_AXIS, Y_AXIS, Z_AXIS};
+    const glm::vec3 face_axis = axis[face_index];
+    float axis_sign = 1;
+    if (face_index > 2)
+        axis_sign = -1;
+
+    const float step = m_piece_size + m_piece_gap;
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            int piece_state_index = faces[face_index][i][j];
+            auto[x, y, z] = get_piece_coordinates(piece_state_index);
+            glm::vec3 piece_position = {x * step, y * step, z * step};
+
+            m_pieces[m_state[piece_state_index]].set_translation_matrix(glm::mat4(1));
+            m_pieces[m_state[piece_state_index]].rotate(rotation_degrees, axis_sign * face_axis);
+            m_pieces[m_state[piece_state_index]].translate(piece_position);
+        }
+    }
 }
