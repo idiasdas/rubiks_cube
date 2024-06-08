@@ -24,12 +24,11 @@ git submodule update --init
 cmake -B build -DCMAKE_BUILD_TYPE=Debug
 ```
 
-4. Build the project and run the executable:
+4. Build the project:
 
 ```bash
 cd build
 make
-./rubiks_cube
 ```
 
 5. Run tests:
@@ -38,6 +37,16 @@ make
 cd build
 ctest
 ```
+
+6. Run executable
+
+```bash
+cd build
+./rubiks_cube
+```
+
+> [!NOTE]
+> You need to run the executable from within the build directory you specified in step 3. When you build this project, it saves the relative path from the chosen build directory to the `utils/` directory. This allows the program to load the shaders during runtime.
 
 # External Software
 
@@ -51,7 +60,7 @@ You can find all external software in **ext/**.
 
 # Controls
 
-Currently, this project renders a rubiks cube that you can control and fly around. The mouse controls the camera. The following are the commands you can use:
+Currently, this project renders a Rubik's cube that you can control and fly around. The mouse controls the camera. The following are the commands you can use:
 
 |Keys|Action|
 |-|-|
