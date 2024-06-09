@@ -304,4 +304,9 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::bottom, 1);
     }
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_R) == GLFW_PRESS && cur_time - last_time > input_delay)
+    {
+        last_time = cur_time;
+        reset();
+    }
 }
