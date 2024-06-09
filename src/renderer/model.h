@@ -79,7 +79,7 @@ private:
     uint32_t m_vertex_buffer_ID;
     uint32_t m_index_buffer_ID;
 
-    std::vector<uint32_t> m_index_buffer;
+    uint32_t m_indices_count;
 
     glm::mat4 m_scale_matrix;
     glm::mat4 m_rotation_matrix;
