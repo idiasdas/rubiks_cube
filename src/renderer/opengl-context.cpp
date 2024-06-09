@@ -36,11 +36,14 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);
 
     // Hide the mouse and enable unlimited movement
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Set the mouse at the center of the screen
     glfwPollEvents();
     glfwSetCursorPos(m_window, window_height / 2, window_width / 2);
+
+    // Disable VSync
+    glfwSwapInterval(0);
 
     // Initialize glad
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -62,6 +65,6 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it is closer to the camera than the former one
     glDepthFunc(GL_LESS);
-
+    // Do not draw polygons if the camera is inside them
     glEnable(GL_CULL_FACE);
 }

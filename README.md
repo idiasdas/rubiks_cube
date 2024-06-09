@@ -71,8 +71,8 @@ Currently, this project renders a Rubik's cube that you can control and fly arou
 |D| Move right|
 |Space| Move up|
 |Right Ctrl | Move down|
-|NumPad 2| Rotate down face clockwise|
-|NumPad 8| Rotate up face clockwise|
+|NumPad 2| Rotate bottom face clockwise|
+|NumPad 8| Rotate top face clockwise|
 |NumPad 4| Rotate left face clockwise|
 |NumPad 6| Rotate right face clockwise|
 |NumPad 5| Rotate front face clockwise|

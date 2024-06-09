@@ -4,6 +4,9 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
 {
     m_piece_size = piece_size;
     m_gap_size = gap_size;
+    m_position[0] = 0.0f;
+    m_position[1] = 0.0f;
+    m_position[2] = 0.0f;
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
@@ -19,8 +22,36 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
             for (int x = -1; x <= 1; x++)
             {
                 set_piece_colors(x, y, z, piece_colors);
-                m_pieces.push_back(get_piece(piece_colors, glm::vec3(x * step, y * step, z * step)));
-                std::cout << piece_count << "(" << x << ", " << y << ", " << z << ")\n";
+                m_pieces.push_back(get_piece(piece_colors, glm::vec3({x * step + m_position[0], y * step + m_position[1], z * step + m_position[2]})));
+                m_state[piece_count++] = piece_count;
+            }
+        }
+    }
+}
+
+Cube::Cube(const float (&position)[3], const float piece_size, const float gap_size, const float (&colors)[6][3])
+{
+    m_piece_size = piece_size;
+    m_gap_size = gap_size;
+    m_position[0] = position[0];
+    m_position[1] = position[1];
+    m_position[2] = position[2];
+
+    for (int i = 0; i < 6; i++)
+        for (int j = 0; j < 3; j++)
+            m_colors[i][j] = colors[i][j];
+
+    float step = m_piece_size + m_gap_size;
+    int piece_count = 0;
+    float piece_colors[6][3];
+    for (int y = 1; y >= -1; y--)
+    {
+        for (int z = 1; z >= -1; z--)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                set_piece_colors(x, y, z, piece_colors);
+                m_pieces.push_back(get_piece(piece_colors, glm::vec3({x * step + m_position[0], y * step + m_position[1], z * step + m_position[2]})));
                 m_state[piece_count++] = piece_count;
             }
         }
@@ -44,12 +75,12 @@ void Cube::set_piece_colors(float x, float y, float z, float (&colors)[6][3])
         for (int i = 0; i < 3; i++)
             colors[Face::left][i] = m_colors[Face::left][i];
 
-    // color piece up face
+    // color piece top face
     if (y == 1)
         for (int i = 0; i < 3; i++)
             colors[Face::top][i] = m_colors[Face::top][i];
 
-    // color piece down face
+    // color piece bottom face
     else if (y == -1)
         for (int i = 0; i < 3; i++)
             colors[Face::bottom][i] = m_colors[Face::bottom][i];
@@ -83,7 +114,7 @@ void Cube::reset()
         m_pieces[i].set_rotation_matrix(glm::mat4(1));
 
         auto[x, y, z] = get_piece_coordinates(i);
-        m_pieces[i].translate({x * step, y * step, z * step});
+        m_pieces[i].translate({x * step + m_position[0], y * step + m_position[1], z * step + m_position[2]});
     }
 }
 
@@ -101,7 +132,7 @@ void Cube::resize(const float piece_size, const float gap_size)
 
         auto[x, y, z] = get_piece_coordinates(i);
         m_pieces[piece_i].scale({m_piece_size / 2.f, m_piece_size / 2.f, m_piece_size / 2.f});
-        m_pieces[piece_i].translate({x * step, y * step, z * step});
+        m_pieces[piece_i].translate({x * step + m_position[0], y * step + m_position[1], z * step + m_position[2]});
     }
 }
 
@@ -211,7 +242,7 @@ void Cube::rotate_face(const Face face_index, const int turns)
         {
             int piece_state_index = faces[face_index][i][j];
             auto[x, y, z] = get_piece_coordinates(piece_state_index);
-            glm::vec3 piece_position = {x * step, y * step, z * step};
+            glm::vec3 piece_position = {x * step + m_position[0], y * step + m_position[1], z * step + m_position[2]};
 
             m_pieces[m_state[piece_state_index]].set_translation_matrix(glm::mat4(1));
             m_pieces[m_state[piece_state_index]].rotate(rotation_degrees, axis_sign * face_axis);

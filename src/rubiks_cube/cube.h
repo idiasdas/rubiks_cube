@@ -18,9 +18,23 @@ class Cube
 {
 public:
     /*
-        Creates the cube. Each piece is a model loaded on the GPU.
+        Creates the cube. Each piece is a model loaded on the GPU. The cube is centered on the origin by default.
+
+        piece_size: The size of each cube representing a piece.
+        gap_size: The space between adjacent pieces.
+        colors: The colors of each face in order (RIGHT, TOP, FRONT, LEFT, BOTTOM, BACK).
     */
     Cube(const float piece_size, const float gap_size, const float (&colors)[6][3]);
+
+    /*
+        Creates the cube on the defined position. Each piece is a model loaded on the GPU.
+
+        position: Coordinates (x, y, z) of the cube's center.
+        piece_size: The size of each cube representing a piece.
+        gap_size: The space between adjacent pieces.
+        colors: The colors of each face in order (RIGHT, TOP, FRONT, LEFT, BOTTOM, BACK).
+    */
+    Cube(const float (&position)[3], const float piece_size, const float gap_size, const float (&colors)[6][3]);
 
     /*
         Calls OpenGL draw for each piece.
@@ -52,12 +66,20 @@ public:
 private:
     Model get_piece(const float (&colors)[][3], const glm::vec3 position);
     void set_piece_colors(float x, float y, float z, float (&colors)[6][3]);
+
+    /*
+        Return the coordinates of the piece relative to the cube's center.
+        For example, (-1, 1, 1) is the piece on the left upper corner of the front face.
+        To obtain the real coordinates of the piece you must first multiplicate each
+        coordinate by piece_size + gap_size and then add this vector to the position of the cube.
+    */
     std::tuple<float, float, float> get_piece_coordinates(const int piece_state_index) const;
 
 private:
     float m_piece_size;
     float m_gap_size;
     float m_colors[6][3];
+    float m_position[3];
     int m_state[27];
     std::vector<Model> m_pieces;
 };
