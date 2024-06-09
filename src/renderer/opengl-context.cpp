@@ -9,7 +9,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     // Initializing GLFW
     if (!glfwInit())
     {
-        std::cout << "[ERROR] Failed to initialize GLFW" << std::endl;
+        std::cout << "[ERROR] Failed to initialize GLFW." << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -24,7 +24,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     if (m_window == nullptr)
     {
-        std::cout << "Failed to open GLFW window" << std::endl;
+        std::cout << "[ERROR] Failed to open GLFW window." << std::endl;
         std::cout << "If you have an Intel GPU, they are not 4.6 compatible." << std::endl;
         glfwTerminate();
         exit(EXIT_FAILURE);
