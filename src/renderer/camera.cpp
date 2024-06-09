@@ -16,28 +16,28 @@ void Camera::read_controls()
 {
     static double last_time = glfwGetTime();
 
-    // Compute time difference between current and last frame
     double current_time = glfwGetTime();
     float delta_time = float(current_time - last_time);
 
+    // limit camera update to 60 fps
     if (delta_time < 1.f / 60.f)
         return;
 
     // Get mouse position
-    double xpos, ypos;
-    glfwGetCursorPos(m_OpenGL_context->get_window_handle(), &xpos, &ypos);
+    double x_pos, y_pos;
+    glfwGetCursorPos(m_OpenGL_context->get_window_handle(), &x_pos, &y_pos);
 
     // Reset mouse position for next frame
-    glfwSetCursorPos(m_OpenGL_context->get_window_handle(), 1024 / 2, 768 / 2);
+    glfwSetCursorPos(m_OpenGL_context->get_window_handle(), m_OpenGL_context->get_window_width() / 2, m_OpenGL_context->get_window_height() / 2);
 
     // Compute new orientation
-    m_horizontal_angle += m_mouse_speed * float(1024 / 2 - xpos);
-    m_vertical_angle += m_mouse_speed * float(768 / 2 - ypos);
+    m_horizontal_angle += m_mouse_speed * float(m_OpenGL_context->get_window_width() / 2 - x_pos);
+    m_vertical_angle += m_mouse_speed * float(m_OpenGL_context->get_window_height() / 2 - y_pos);
 
-    if (m_vertical_angle > 3.14f / 2.0f)
-        m_vertical_angle = 3.14f / 2.0f; // pi/2
-    if (m_vertical_angle < -3.14f / 2.0f)
-        m_vertical_angle = -3.14f / 2.0f; // pi/2
+    if (m_vertical_angle > PI / 2.0f)
+        m_vertical_angle = PI / 2.0f; // pi/2
+    if (m_vertical_angle < -PI / 2.0f)
+        m_vertical_angle = -PI / 2.0f; // pi/2
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -47,9 +47,9 @@ void Camera::read_controls()
 
     // Right vector
     glm::vec3 right = glm::vec3(
-        sin(m_horizontal_angle - 3.14f / 2.0f),
+        sin(m_horizontal_angle - PI / 2.0f),
         0,
-        cos(m_horizontal_angle - 3.14f / 2.0f));
+        cos(m_horizontal_angle - PI / 2.0f));
 
     // Up vector
     glm::vec3 up = glm::cross(right, direction);

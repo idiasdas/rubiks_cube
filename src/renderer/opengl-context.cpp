@@ -40,7 +40,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     // Set the mouse at the center of the screen
     glfwPollEvents();
-    glfwSetCursorPos(m_window, 1024 / 2, 768 / 2);
+    glfwSetCursorPos(m_window, window_height / 2, window_width / 2);
 
     // Initialize glad
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
