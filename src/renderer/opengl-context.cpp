@@ -17,6 +17,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     m_window = glfwCreateWindow(m_window_width, m_window_height, m_window_name.c_str(), NULL, NULL);
@@ -25,25 +26,17 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     {
         std::cout << "Failed to open GLFW window" << std::endl;
         std::cout << "If you have an Intel GPU, they are not 4.6 compatible." << std::endl;
-        std::cout << "Try the 2.1 version of the tutorials." << std::endl;
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
 
     glfwMakeContextCurrent(m_window);
 
-    // Ensure we can capture the escape key being pressed below
-    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);
-
-    // Hide the mouse and enable unlimited movement
-    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Set the mouse at the center of the screen
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);         // Ensure we can capture the escape key being pressed
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Hide the mouse and enable unlimited movement
+    glfwSetCursorPos(m_window, window_height / 2, window_width / 2);// Set the mouse at the center of the screen
+    glfwSwapInterval(0);                                            // Disable VSync
     glfwPollEvents();
-    glfwSetCursorPos(m_window, window_height / 2, window_width / 2);
-
-    // Disable VSync
-    glfwSwapInterval(0);
 
     // Initialize glad
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -60,7 +53,6 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it is closer to the camera than the former one
