@@ -4,6 +4,17 @@ Implementing a Rubik's Cube with OpenGL.
 
 Here, I put together the OpenGL tutorial and game engine series to practice. Feel free to use this code however you want, although you shouldn't trust it too much... If you have any questions or ideas, please don't hesitate to contact me.
 
+# Requirements
+
+The [OpenGL tutorial](http://www.opengl-tutorial.org/beginners-tutorials/tutorial-1-opening-a-window/) specifies the following libraries as requirements:
+
+``` bash
+cmake make g++ libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
+```
+Furthermore, I use `gcc14 11.4.0` to compile the source code. A friend of mine ran into problems with `Clang`, and for now, I'm not looking into maintaining compatibility.
+
+Finally, your graphics card must support OpenGL 4.6.
+
 # Quick Start
 
 1. Clone this repo:
