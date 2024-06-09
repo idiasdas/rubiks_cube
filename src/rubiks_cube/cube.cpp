@@ -3,13 +3,13 @@
 Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6][3])
 {
     m_piece_size = piece_size;
-    m_piece_gap = gap_size;
+    m_gap_size = gap_size;
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
             m_colors[i][j] = colors[i][j];
 
-    float step = m_piece_size + m_piece_gap;
+    float step = m_piece_size + m_gap_size;
     int piece_count = 0;
     float piece_colors[6][3];
     for (int y = 1; y >= -1; y--)
@@ -73,7 +73,39 @@ std::tuple<float, float, float> Cube::get_piece_coordinates(const int piece_stat
     return std::make_tuple(x, y, z);
 }
 
-Model Cube::get_piece(const float (& colors)[][3], const glm::vec3 position)
+void Cube::reset()
+{
+    float step = m_piece_size + m_gap_size;
+    for (int i = 0; i < 27; i++)
+    {
+        m_state[i] = i;
+        m_pieces[i].set_translation_matrix(glm::mat4(1));
+        m_pieces[i].set_rotation_matrix(glm::mat4(1));
+
+        auto[x, y, z] = get_piece_coordinates(i);
+        m_pieces[i].translate({x * step, y * step, z * step});
+    }
+}
+
+void Cube::resize(const float piece_size, const float gap_size)
+{
+    m_piece_size = piece_size;
+    m_gap_size = gap_size;
+    float step = m_piece_size + m_gap_size;
+    for (int i = 0; i < 27; i++)
+    {
+        const int piece_i = m_state[i];
+        m_pieces[piece_i].set_translation_matrix(glm::mat4(1));
+        m_pieces[piece_i].set_rotation_matrix(glm::mat4(1));
+        m_pieces[piece_i].set_scale_matrix(glm::mat4(1));
+
+        auto[x, y, z] = get_piece_coordinates(i);
+        m_pieces[piece_i].scale({m_piece_size / 2.f, m_piece_size / 2.f, m_piece_size / 2.f});
+        m_pieces[piece_i].translate({x * step, y * step, z * step});
+    }
+}
+
+Model Cube::get_piece(const float (&colors)[][3], const glm::vec3 position)
 {
     Model piece;
 
@@ -129,7 +161,7 @@ Model Cube::get_piece(const float (& colors)[][3], const glm::vec3 position)
     piece.buffer_vertices(buffer);
     piece.buffer_indices(indices);
 
-    // TODO: Scale piece with m_piece_size
+    piece.scale({m_piece_size / 2.f, m_piece_size / 2.f, m_piece_size / 2.f});
     piece.translate(position);
 
     return piece;
@@ -171,7 +203,7 @@ void Cube::rotate_face(const Face face_index, const int turns)
     if (face_index > 2)
         axis_sign = -1;
 
-    const float step = m_piece_size + m_piece_gap;
+    const float step = m_piece_size + m_gap_size;
 
     for (int i = 0; i < 3; i++)
     {
@@ -190,9 +222,10 @@ void Cube::rotate_face(const Face face_index, const int turns)
 
 void Cube::read_controls(OpenGLContext *const openGL_context)
 {
+    float input_delay = 0.2f;
     static double last_time = glfwGetTime();
     double cur_time = glfwGetTime();
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_5) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_5) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -200,7 +233,7 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::front, 1);
     }
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_6) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_6) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -208,7 +241,7 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::right, 1);
     }
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_4) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_4) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -216,7 +249,7 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::left, 1);
     }
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_0) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_0) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -224,7 +257,7 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::back, 1);
     }
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_8) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_8) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -232,7 +265,7 @@ void Cube::read_controls(OpenGLContext *const openGL_context)
         else
             rotate_face(Face::top, 1);
     }
-    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_2) == GLFW_PRESS && cur_time - last_time > 0.2f)
+    if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_2) == GLFW_PRESS && cur_time - last_time > input_delay)
     {
         last_time = cur_time;
         if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)

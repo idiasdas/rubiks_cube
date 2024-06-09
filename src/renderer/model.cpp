@@ -69,7 +69,7 @@ void Model::draw(const Shader &shader, const glm::mat4 MVP) const
 
 void Model::scale(const glm::vec3& scale_vector)
 {
-    m_scale_matrix = glm::translate(m_scale_matrix, scale_vector);
+    m_scale_matrix = glm::scale(glm::mat4(1), scale_vector) * m_scale_matrix;
 }
 
 void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis)
@@ -79,5 +79,5 @@ void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis)
 
 void Model::translate(const glm::vec3& translation_vector)
 {
-    m_translation_matrix = glm::translate(m_translation_matrix, translation_vector);
+    m_translation_matrix = glm::translate(glm::mat4(1), translation_vector) * m_translation_matrix;
 }

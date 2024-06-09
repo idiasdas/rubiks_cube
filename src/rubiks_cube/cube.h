@@ -39,6 +39,16 @@ public:
     */
     void read_controls(OpenGLContext *const openGL_context);
 
+    /*
+        Reset cube to initial (solved) state.
+    */
+    void reset();
+
+    /*
+        Resizes the cube to the piece_size and gap_size
+    */
+    void resize(const float piece_size, const float gap_size);
+
 private:
     Model get_piece(const float (&colors)[][3], const glm::vec3 position);
     void set_piece_colors(float x, float y, float z, float (&colors)[6][3]);
@@ -46,7 +56,7 @@ private:
 
 private:
     float m_piece_size;
-    float m_piece_gap;
+    float m_gap_size;
     float m_colors[6][3];
     int m_state[27];
     std::vector<Model> m_pieces;

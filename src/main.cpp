@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 {
     OpenGLContext context("Rubik's Cube", 1280, 720);
-    Cube cube(3.0f, 0.5f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
+    Cube cube(2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
 
