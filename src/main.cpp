@@ -3,6 +3,7 @@
 
 #include "rubiks_cube.h"
 
+#include "log.h"
 #include "renderer/opengl-context.h"
 #include "renderer/shader.h"
 #include "renderer/model.h"
@@ -11,20 +12,10 @@
 
 int main(int argc, char *argv[])
 {
+    Log::init();
     OpenGLContext context("Rubik's Cube", 1280, 720);
 
     Cube cube({2, 0, 0}, 2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
-
-    // std::vector<Cube> cubes;
-
-    // for (int i = 0; i < 10; i++)
-    // {
-    //     for (int j = 0; j < 10; j++)
-    //     {
-    //         Cube cube({i * 10.f, j * 10.f, 0.f}, 2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
-    //         cubes.push_back(cube);
-    //     }
-    // }
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
@@ -38,7 +29,7 @@ int main(int argc, char *argv[])
 
         if(delta > 1.0f)
         {
-            std::cout << "FPS: " << frames_count / delta << "\n";
+            LOG_INFO("FPS: {0}", frames_count / delta);
             last_time = cur_time;
             frames_count = 0;
         }
@@ -50,8 +41,6 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         cube.draw(color_shader, camera);
-        // for (Cube cube : cubes)
-        //     cube.draw(color_shader, camera);
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());

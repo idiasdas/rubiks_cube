@@ -66,6 +66,7 @@ This project uses:
 - glad
 - glfw
 - glm
+- spdlog
 
 You can find all external software in **ext/**.
 
@@ -100,7 +101,7 @@ Currently, this project renders a Rubik's cube that you can control and fly arou
 - [ ] Animation queue
 - [ ] Dynamic resize
 - [ ] Event system
-- [ ] Log system
+- [x] Log system
 - [ ] ImGui control and debug window
 - [ ] Varying move animation speed
 - [ ] GIF generator

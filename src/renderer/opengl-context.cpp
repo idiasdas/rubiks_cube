@@ -9,7 +9,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     // Initializing GLFW
     if (!glfwInit())
     {
-        std::cout << "[ERROR] Failed to initialize GLFW." << std::endl;
+        LOG_ERROR("Failed to initialize GLFW.");
         exit(EXIT_FAILURE);
     }
 
@@ -24,8 +24,8 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     if (m_window == nullptr)
     {
-        std::cout << "[ERROR] Failed to open GLFW window." << std::endl;
-        std::cout << "If you have an Intel GPU, they are not 4.6 compatible." << std::endl;
+        LOG_ERROR("Failed to open GLFW window.");
+        LOG_ERROR(" - If you have an Intel GPU, they are not 4.6 compatible.");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -46,10 +46,10 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
         exit(EXIT_FAILURE);
     }
 
-    std::cout << "OpenGL Info:" << std::endl;
-    std::cout << " - Vendor:    " << (const char *)glGetString(GL_VENDOR) << std::endl;
-    std::cout << " - Renderer:  " << (const char *)glGetString(GL_RENDERER) << std::endl;
-    std::cout << " - Version:   " << (const char *)glGetString(GL_VERSION) << std::endl;
+    LOG_INFO("OpenGL Info:");
+    LOG_INFO(" - Vendor:    {0}", (const char *)glGetString(GL_VENDOR));
+    LOG_INFO(" - Renderer:  {0}", (const char *)glGetString(GL_RENDERER));
+    LOG_INFO(" - Version:   {0}", (const char *)glGetString(GL_VERSION));
 
     // Dark blue background
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);

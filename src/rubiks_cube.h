@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
+
 #include <glm/glm.hpp>
 
 #define PI glm::pi<float>()

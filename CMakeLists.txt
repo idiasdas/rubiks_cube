@@ -6,12 +6,14 @@ set(include_directories
     ext/glfw/include
     ext/glad/include
     ext/glm
+    ext/spdlog/include
     src/
 )
 set(libraries
     glad
     glfw
     glm::glm
+    spdlog::spdlog
 )
 
 project(${project_target})

@@ -12,6 +12,8 @@
 
 #include <glad/glad.h>
 
+#include "log.h"
+
 #ifndef EXECUTABLE_UTILS_PATH
 #define EXECUTABLE_UTILS_PATH ""
 #endif
