@@ -12,7 +12,7 @@ Model::Model()
 void Model::buffer_vertices(const std::vector<float> buffer)
 {
     glBindVertexArray(m_vertex_array_ID);
-    glCreateBuffers(1, &m_vertex_buffer_ID);
+    glGenBuffers(1, &m_vertex_buffer_ID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
     glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), &buffer[0], GL_STATIC_DRAW);
 
@@ -49,7 +49,7 @@ void Model::buffer_indices(const std::vector<uint32_t> buffer)
     m_indices_count = buffer.size();
 
     glBindVertexArray(m_vertex_array_ID);
-    glCreateBuffers(1, &m_index_buffer_ID);
+    glGenBuffers(1, &m_index_buffer_ID);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_index_buffer_ID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices_count * sizeof(uint32_t), buffer.data(), GL_STATIC_DRAW);
 
