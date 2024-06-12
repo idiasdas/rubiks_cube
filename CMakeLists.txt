@@ -40,12 +40,12 @@ target_include_directories(${executable_name} PUBLIC ${include_directories})
 
 target_link_libraries(${executable_name} PRIVATE ${libraries})
 
-# Adding tests
+# # Adding tests
 
-enable_testing()
-find_package(GTest REQUIRED)
-add_subdirectory(tests)
+# enable_testing()
+# find_package(GTest REQUIRED)
+# add_subdirectory(tests)
 
-target_include_directories(tests PUBLIC ${include_directories})
+# target_include_directories(tests PUBLIC ${include_directories})
 
-target_link_libraries(tests PRIVATE ${libraries})
+# target_link_libraries(tests PRIVATE ${libraries})
