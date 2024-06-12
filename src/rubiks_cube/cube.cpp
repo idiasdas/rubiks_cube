@@ -136,7 +136,7 @@ void Cube::resize(const float piece_size, const float gap_size)
     }
 }
 
-Model Cube::get_piece(const float (&colors)[][3], const glm::vec3 position)
+Model Cube::get_piece(const float (&colors)[6][3], const glm::vec3 position)
 {
     Model piece;
 

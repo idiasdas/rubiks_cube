@@ -64,7 +64,7 @@ public:
     void resize(const float piece_size, const float gap_size);
 
 private:
-    Model get_piece(const float (&colors)[][3], const glm::vec3 position);
+    Model get_piece(const float (&colors)[6][3], const glm::vec3 position);
     void set_piece_colors(float x, float y, float z, float (&colors)[6][3]);
 
     /*
