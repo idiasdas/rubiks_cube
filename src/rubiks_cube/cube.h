@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <cmath>
 
 #include "renderer/model.h"
 #include "renderer/camera.h"
@@ -12,6 +13,13 @@
 enum Face
 {
     right = 0, top, front, left, bottom, back
+};
+
+struct PieceCoordinates
+{
+    float x;
+    float y;
+    float z;
 };
 
 class Cube
@@ -27,16 +35,6 @@ public:
     Cube(const float piece_size, const float gap_size, const float (&colors)[6][3]);
 
     /*
-        Creates the cube on the defined position. Each piece is a model loaded on the GPU.
-
-        position: Coordinates (x, y, z) of the cube's center.
-        piece_size: The size of each cube representing a piece.
-        gap_size: The space between adjacent pieces.
-        colors: The colors of each face in order (RIGHT, TOP, FRONT, LEFT, BOTTOM, BACK).
-    */
-    Cube(const float (&position)[3], const float piece_size, const float gap_size, const float (&colors)[6][3]);
-
-    /*
         Calls OpenGL draw for each piece.
     */
     void draw(const Shader &shader, const Camera &camera) const;
@@ -46,7 +44,7 @@ public:
         Applies the clockwise rotation and translation to the pieces moved.
         Every rotation is clockwise for now.
     */
-    void rotate_face(const Face face_index, const int turns);
+    void rotate_face(const Face face_index, const float rotation_degrees);
 
     /*
         Reades the keyboard inputs from OpenGL and apply the corresponding moves to the cube.
@@ -58,6 +56,8 @@ public:
     */
     void reset();
 
+    void round_pieces_positions();
+
     /*
         Resizes the cube to the piece_size and gap_size
     */
@@ -65,7 +65,8 @@ public:
 
 private:
     Model get_piece(const float (&colors)[][3], const glm::vec3 position);
-    void set_piece_colors(float x, float y, float z, float (&colors)[6][3]);
+    void set_piece_colors(const PieceCoordinates& piece_coordinates, float (&colors)[6][3]);
+    bool is_piece_on_face(const PieceCoordinates& piece_coordinates, const Face face_index) const;
 
     /*
         Return the coordinates of the piece relative to the cube's center.
@@ -73,13 +74,12 @@ private:
         To obtain the real coordinates of the piece you must first multiplicate each
         coordinate by piece_size + gap_size and then add this vector to the position of the cube.
     */
-    std::tuple<float, float, float> get_piece_coordinates(const int piece_state_index) const;
+    PieceCoordinates get_original_piece_coordinates(const int piece_index) const;
 
 private:
     float m_piece_size;
     float m_gap_size;
     float m_colors[6][3];
-    float m_position[3];
-    int m_state[27];
     std::vector<Model> m_pieces;
+    std::vector<PieceCoordinates> m_pieces_coordinates;
 };

@@ -97,7 +97,7 @@ Currently, this project renders a Rubik's cube that you can control and fly arou
 - [x] Render Cube
 - [x] Fly around
 - [x] Move pieces
-- [ ] Movement animation
+- [x] Movement animation
 - [ ] Animation queue
 - [ ] Dynamic resize
 - [ ] Event system
