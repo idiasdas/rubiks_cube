@@ -40,9 +40,10 @@ public:
     void draw(const Shader &shader, const Camera &camera) const;
 
     /*
-        Updates the vector m_state with the new pieces positions.
-        Applies the clockwise rotation and translation to the pieces moved.
-        Every rotation is clockwise for now.
+        Applies the rotation and translation to the pieces moved.
+        A positve rotation degree leads to a clockwise face rotation.
+        Althought this can be counterintuitive from a linear algebra perspective,
+        it is easier to consider the standard cube rotation to be clockwise.
     */
     void rotate_face(const Face face_index, const float rotation_degrees);
 
