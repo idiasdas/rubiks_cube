@@ -9,16 +9,16 @@
 #include "renderer/model.h"
 #include "renderer/camera.h"
 #include "rubiks_cube/cube.h"
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
     Log::init();
     OpenGLContext context("Rubik's Cube", 1280, 720);
-
     Cube cube(2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
-
-    Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
+    Controller::init(&context, &cube, &camera);
+    Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     double last_time = glfwGetTime();
     int frames_count = 0;
     do
@@ -34,8 +34,7 @@ int main(int argc, char *argv[])
             frames_count = 0;
         }
 
-        cube.read_controls(&context);
-        camera.read_controls();
+        Controller::update();
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
