@@ -35,7 +35,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);         // Ensure we can capture the escape key being pressed
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);  // Hide the mouse and enable unlimited movement
     glfwSetCursorPos(m_window, window_height / 2, window_width / 2);// Set the mouse at the center of the screen
-    glfwSwapInterval(0);                                            // Disable VSync
+    glfwSwapInterval(1);                                            // Vsync (0 == off, 1 == on)
     glfwPollEvents();
 
     // Initialize glad
