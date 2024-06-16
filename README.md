@@ -1,5 +1,5 @@
 <p align="center">
-<a href="url"><img src="utils/doc/cube.gif" height="150" width="150" ></a>
+<a href="url"><img src="utils/doc/cube.gif" height="144" width="188" ></a>
 </p>
 
 # Rubik's Cube
