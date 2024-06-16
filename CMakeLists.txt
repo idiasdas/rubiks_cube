@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
 
-add_compile_options(-Wall -Wextra -Wpedantic)
-
 set(project_target rubiks_cube)
 set(executable_name rubiks_cube)
 set(include_directories
@@ -30,6 +28,8 @@ add_subdirectory(ext)
 file(GLOB_RECURSE executable_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(${executable_name} ${executable_sources})
+
+target_compile_options(${executable_name} PRIVATE -Wall -Wextra -Wpedantic)
 
 file(RELATIVE_PATH relative ${CMAKE_BINARY_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/utils/")
 
