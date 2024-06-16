@@ -46,60 +46,28 @@ void Controller::read_cube_commands(int key, int action)
     {
         m_cube->reset();
     }
-
     // Hold Left Shift to rotate face counterclockwise
     else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
         clockwise = false;
     else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
         clockwise = true;
-
-    // Rotate face with numpad keys
-    else if (key == GLFW_KEY_KP_8 && action == GLFW_PRESS)
+    else
     {
-        if (clockwise)
-            m_moves.push({Face::top, 1});
-        else
-            m_moves.push({Face::top, -1});
-    }
+        int keys[] = {GLFW_KEY_KP_8, GLFW_KEY_KP_2, GLFW_KEY_KP_4, GLFW_KEY_KP_6, GLFW_KEY_KP_0, GLFW_KEY_KP_5};
+        Face faces[] = {Face::top, Face::bottom, Face::left, Face::right, Face::back, Face::front};
 
-    else if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS)
-    {
-        if (clockwise)
-            m_moves.push({Face::bottom, 1});
-        else
-            m_moves.push({Face::bottom, -1});
-    }
-
-    else if (key == GLFW_KEY_KP_4 && action == GLFW_PRESS)
-    {
-        if (clockwise)
-            m_moves.push({Face::left, 1});
-        else
-            m_moves.push({Face::left, -1});
-    }
-
-    else if (key == GLFW_KEY_KP_6 && action == GLFW_PRESS)
-    {
-        if (clockwise)
-            m_moves.push({Face::right, 1});
-        else
-            m_moves.push({Face::right, -1});
-    }
-
-    else if (key == GLFW_KEY_KP_0 && action == GLFW_PRESS)
-    {
-        if (clockwise)
-            m_moves.push({Face::back, 1});
-        else
-            m_moves.push({Face::back, -1});
-    }
-
-    else if (key == GLFW_KEY_KP_5 && action == GLFW_PRESS)
-    {
-        if (clockwise)
-            m_moves.push({Face::front, 1});
-        else
-            m_moves.push({Face::front, -1});
+        for (int i = 0; i < 6; i++)
+        {
+            // Rotate face with number keys
+            if (key == keys[i] && action == GLFW_PRESS)
+            {
+                if (clockwise)
+                    m_moves.push({faces[i], 1});
+                else
+                    m_moves.push({faces[i], -1});
+                break;
+            }
+        }
     }
 }
 
