@@ -184,7 +184,7 @@ Model Cube::get_piece(const float (&colors)[6][3], const glm::vec3 position)
     };
 
     std::vector<uint32_t> indices;
-    for (int i = 0; i < buffer.size(); i++)
+    for (size_t i = 0; i < buffer.size(); i++)
         indices.push_back(i);
 
     piece.buffer_vertices(buffer);
@@ -204,14 +204,10 @@ void Cube::draw(const Shader &shader, const Camera &camera) const
 void Cube::rotate_face(const Face face_index, const float rotation_degrees)
 {
     const float correct_rotation_degrees = -rotation_degrees;
-    const int rotation_sign = (face_index < 3) ? -1 : 1;
     const glm::vec3 axis[6] = {X_AXIS, Y_AXIS, Z_AXIS, X_AXIS, Y_AXIS, Z_AXIS};
     const glm::vec3 face_axis = axis[face_index];
-    float axis_sign = 1;
     // if the face is left, bottom or back, the rotation is counter-clockwise along the standard axis
-    if (face_index > 2)
-        axis_sign = -1;
-
+    const float axis_sign = (face_index > 2) ? -1 : 1;
     const float step = m_piece_size + m_gap_size;
 
     for (int i = 0; i < 27; i++)
@@ -258,77 +254,4 @@ void Cube::rotate_face(const Face face_index, const float rotation_degrees)
             m_pieces[i].translate({m_pieces_coordinates[i].x * step, m_pieces_coordinates[i].y * step, m_pieces_coordinates[i].z * step});
         }
     }
-}
-
-void Cube::read_controls(OpenGLContext *const openGL_context)
-{
-    // float input_delay = 0.2f;
-    static double last_time = glfwGetTime();
-    static float total_angle = 0.0f;
-    static Face rotating_face = Face::front;
-    double cur_time = glfwGetTime();
-
-    rotate_face(rotating_face, (PI / 2.f) * (float) (cur_time - last_time));
-    total_angle += (PI / 2.f) * (float) (cur_time - last_time);
-    if (total_angle >= PI / 2.f)
-    {
-        rotating_face = (Face) ((int) (rotating_face + 1) % 6);
-        round_pieces_positions();
-        total_angle = 0.0f;
-    }
-    last_time = cur_time;
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_5) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::front, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::front, PI / 10.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_6) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::right, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::right, PI / 2.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_4) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::left, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::left, PI / 2.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_0) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::back, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::back, PI / 2.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_8) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::top, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::top, PI / 2.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_KP_2) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    //         rotate_face(Face::bottom, 3 * PI / 4.f);
-    //     else
-    //         rotate_face(Face::bottom, PI / 2.f);
-    // }
-    // if (glfwGetKey(openGL_context->get_window_handle(), GLFW_KEY_R) == GLFW_PRESS && cur_time - last_time > input_delay)
-    // {
-    //     last_time = cur_time;
-    //     reset();
-    // }
-    // LOG_INFO("Piece 6 coordinates: {0}, {1}, {2}", m_pieces_coordinates[6].x, m_pieces_coordinates[6].y, m_pieces_coordinates[6].z);
 }

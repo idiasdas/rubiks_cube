@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
+add_compile_options(-Wall -Wextra -Wpedantic)
+
 set(project_target rubiks_cube)
 set(executable_name rubiks_cube)
 set(include_directories

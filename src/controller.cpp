@@ -78,7 +78,6 @@ void Controller::run_animation()
 
     static double last_time = glfwGetTime();
     static double total_angle = 0.0f;
-    static int count = 0;
 
     if (m_state == ControllerState::wait_input)
     {
