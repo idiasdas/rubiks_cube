@@ -1,3 +1,7 @@
+<p align="center">
+<a href="url"><img src="utils/doc/cube.gif" height="150" width="150" ></a>
+</p>
+
 # Rubik's Cube
 
 Implementing a Rubik's Cube with OpenGL.
@@ -11,9 +15,8 @@ The [OpenGL tutorial](http://www.opengl-tutorial.org/beginners-tutorials/tutoria
 ``` bash
 cmake make g++ libx11-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxrandr-dev libxext-dev libxcursor-dev libxinerama-dev libxi-dev
 ```
-Furthermore, I use `gcc14 11.4.0` to compile the source code. A friend of mine ran into problems with `Clang`, and for now, I'm not looking into maintaining compatibility.
 
-Finally, your graphics card must support OpenGL 4.6.
+Additionally, your graphics card must support OpenGL 4.6. [Yvo Menezes](https://github.com/yvomenezes) made the branch `osx` with some changes to use OpenGL 4.1 on MacOS.
 
 # Quick Start
 
@@ -103,7 +106,7 @@ Currently, this project renders a Rubik's cube that you can control and fly arou
 - [ ] Event system
 - [x] Log system
 - [ ] ImGui control and debug window
-- [ ] Varying move animation speed
+- [x] Varying move animation speed
 - [ ] GIF generator
 - [ ] Solver
-- [ ] Select cubes through camera's view vector
+- [ ] Rotate faces with the mouse
