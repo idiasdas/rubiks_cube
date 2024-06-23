@@ -44,7 +44,7 @@ void Controller::read_cube_commands(int key, int action)
     // R to reset cube to initial (solved) state
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
-        m_cube->reset();
+        m_moves.push({Face::front, 0});
     }
     // Hold Left Shift to rotate face counterclockwise
     else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
@@ -78,6 +78,13 @@ void Controller::run_animation()
 
     static double last_time = glfwGetTime();
     static double total_angle = 0.0f;
+
+    if (m_moves.front().direction == 0)
+    {
+        m_cube->reset();
+        m_moves.pop();
+        return;
+    }
 
     if (m_state == ControllerState::wait_input)
     {
