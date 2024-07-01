@@ -114,3 +114,51 @@ bool ray_intersects_OBB(glm::vec3 ray_origin,
     intersection_distance = t_min;
     return true;
 }
+
+void screen_pos_to_world_ray(
+	int mouse_x, int mouse_y,             // Mouse position, in pixels, from bottom-left corner of the window
+	int screen_width, int screen_height,  // Window size, in pixels
+	glm::mat4 view_matrix,                // Camera position and orientation
+	glm::mat4 projection_matrix,          // Camera parameters (ratio, field of view, near and far planes)
+	glm::vec3& out_origin,                // Ouput : Origin of the ray. /!\ Starts at the near plane, so if you want the ray to start at the camera's position instead, ignore this.
+	glm::vec3& out_direction              // Ouput : Direction, in world space, of the ray that goes "through" the mouse.
+){
+
+	// The ray Start and End positions, in Normalized Device Coordinates
+	glm::vec4 ray_start_NDC(
+		((float)mouse_x/(float)screen_width  - 0.5f) * 2.0f, // [0,1024] -> [-1,1]
+		((float)mouse_y/(float)screen_height - 0.5f) * 2.0f, // [0, 768] -> [-1,1]
+		-1.0, // The near plane maps to Z=-1 in Normalized Device Coordinates
+		1.0f
+	);
+	glm::vec4 ray_end_NDC(
+		((float)mouse_x/(float)screen_width  - 0.5f) * 2.0f,
+		((float)mouse_y/(float)screen_height - 0.5f) * 2.0f,
+		0.0,
+		1.0f
+	);
+
+	// The Projection matrix goes from Camera Space to NDC.
+	// So inverse(ProjectionMatrix) goes from NDC to Camera Space.
+	glm::mat4 inverse_projection_matrix = glm::inverse(projection_matrix);
+
+	// The View Matrix goes from World Space to Camera Space.
+	// So inverse(ViewMatrix) goes from Camera Space to World Space.
+	glm::mat4 inverse_view_matrix = glm::inverse(view_matrix);
+
+	glm::vec4 ray_start_camera = inverse_projection_matrix * ray_start_NDC;    ray_start_camera/=ray_start_camera.w;
+	glm::vec4 ray_start_world  = inverse_view_matrix       * ray_start_camera; ray_start_world /=ray_start_world .w;
+	glm::vec4 ray_end_camera   = inverse_projection_matrix * ray_end_NDC;      ray_end_camera  /=ray_end_camera  .w;
+	glm::vec4 ray_end_world    = inverse_view_matrix       * ray_end_camera;   ray_end_world   /=ray_end_world   .w;
+
+	// Faster way (just one inverse)
+	//glm::mat4 M = glm::inverse(ProjectionMatrix * ViewMatrix);
+	//glm::vec4 lRayStart_world = M * lRayStart_NDC; lRayStart_world/=lRayStart_world.w;
+	//glm::vec4 lRayEnd_world   = M * lRayEnd_NDC  ; lRayEnd_world  /=lRayEnd_world.w;
+
+	glm::vec3 ray_dir_world(ray_end_world - ray_start_world);
+	ray_dir_world = glm::normalize(ray_dir_world);
+
+	out_origin = glm::vec3(ray_start_world);
+	out_direction = glm::normalize(ray_dir_world);
+}
