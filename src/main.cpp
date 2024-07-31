@@ -11,7 +11,7 @@
 #include "rubiks_cube/cube.h"
 #include "controller.h"
 
-int main(int argc, char *argv[])
+int main()
 {
     Log::init();
     OpenGLContext context("Rubik's Cube", 1280, 720);
@@ -31,7 +31,14 @@ int main(int argc, char *argv[])
 
     axis_lines.buffer_indices({0, 1, 2, 3, 4, 5});
 
-    axis_lines.scale({5, 5, 5});
+    Model ray;
+    glm::vec3 ray_origin = {1.f, 0.f, 0.f};
+    glm::vec3 ray_direction = {0.f, 0.f, 0.f};
+    ray.buffer_vertices({
+         0.0f, 0.0f, 0.0f, .8f, 0.8f, 0.2f,
+         10.0f, 10.0f, 0.0f, .8f, 0.8f, 0.2f
+    });
+    ray.buffer_indices({0, 1});
 
     Camera camera(&context);
     Controller::init(&context, &cube, &camera);
@@ -60,6 +67,25 @@ int main(int argc, char *argv[])
 
         cube.draw(color_shader, camera);
         axis_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axis_lines.get_model_matrix());
+
+        glm::vec3 new_ray_origin = Controller::get_ray_origin();
+
+        if (new_ray_origin != ray_origin)
+        {
+            LOG_INFO("Update ray origin");
+            ray_direction = Controller::get_ray_direction();
+            ray_origin = new_ray_origin;
+
+            ray.update_buffer_vertices({
+                ray_origin.x, ray_origin.y, ray_origin.z, 0.8f, 0.8f, 0.2f,
+                500.f * ray_direction.x + ray_origin.x, 500.f * ray_direction.y + ray_origin.y, 500.f * ray_direction.z + ray_origin.z, 0.8f, 0.8f, 0.2f
+            });
+        }
+
+        if (ray_origin != glm::vec3(0.f, 0.f, 0.f))
+        {
+            ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
+        }
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());

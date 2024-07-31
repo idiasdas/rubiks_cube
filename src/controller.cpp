@@ -9,6 +9,8 @@ float Controller::m_animation_speed = 5.0f; // rotations per second
 double Controller::m_xpos = 0.f;
 double Controller::m_ypos = 0.f;
 float Controller::m_mouse_sensitivity = 0.005f;
+glm::vec3 Controller::m_ray_origin = {0.f, 0.f, 0.f};
+glm::vec3 Controller::m_ray_end = {0.f, 0.f, 0.f};
 
 void Controller::init(OpenGLContext *context, Cube *cube, Camera *camera)
 {
@@ -33,6 +35,9 @@ void Controller::update()
 
 void Controller::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    (void) scancode;
+    (void) mods;
+
     // ESC to close window
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
@@ -45,6 +50,8 @@ void Controller::key_callback(GLFWwindow *window, int key, int scancode, int act
 
 void Controller::mouse_pos_callback(GLFWwindow *window, double xpos, double ypos)
 {
+    (void) window;
+
     if (m_state == ControllerState::move_camera)
     {
         m_camera->spherical_move(m_mouse_sensitivity * (m_xpos - xpos), -m_mouse_sensitivity * (m_ypos - ypos), 0);
@@ -56,6 +63,9 @@ void Controller::mouse_pos_callback(GLFWwindow *window, double xpos, double ypos
 
 void Controller::mouse_buttom_callback(GLFWwindow *window, int button, int action, int mods)
 {
+    (void) window;
+    (void) mods;
+
     if (action == GLFW_RELEASE)
     {
         LOG_INFO(" Wait input mode.");
@@ -68,22 +78,26 @@ void Controller::mouse_buttom_callback(GLFWwindow *window, int button, int actio
             glfwGetCursorPos(m_openGL_context->get_window_handle(), &m_xpos, &m_ypos);
 
             glm::vec4 ray_start_NDC(((float)m_xpos / (float)m_openGL_context->get_window_width() - 0.5f) * 2.0f,
-                                    ((float)m_ypos / (float)m_openGL_context->get_window_height() - 0.5f) * 2.0f,
+                                    -((float)m_ypos / (float)m_openGL_context->get_window_height() - 0.5f) * 2.0f,
                                     -1.f,
                                     1.0f);
 
             glm::vec4 ray_end_NDC(((float)m_xpos / (float)m_openGL_context->get_window_width() - 0.5f) * 2.0f,
-                                  ((float)m_ypos / (float)m_openGL_context->get_window_height() - 0.5f) * 2.0f,
+                                  -((float)m_ypos / (float)m_openGL_context->get_window_height() - 0.5f) * 2.0f,
                                   0.f,
                                   1.0f);
 
             glm::mat4 inverse_projection_view = glm::inverse(m_camera->get_projection_matrix() * m_camera->get_view_matrix());
-            glm::vec4 ray_start_world = inverse_projection_view * ray_start_NDC;
+            glm::vec4 ray_origin_world = inverse_projection_view * ray_start_NDC;
+            ray_origin_world /= ray_origin_world.w;
             glm::vec4 ray_end_world = inverse_projection_view * ray_end_NDC;
-            ray_start_world /= ray_start_world.w;
             ray_end_world /= ray_end_world.w;
 
-            m_cube->ray_pick(ray_start_world, glm::normalize(ray_end_world - ray_start_world));
+            m_ray_origin = ray_origin_world;
+            m_ray_end = ray_end_world;
+
+            m_cube->ray_pick(m_ray_origin, glm::normalize(m_ray_end - m_ray_origin));
+
             // std::string str_face = "none";
             // switch (m_cube->ray_pick(ray_start_world, glm::normalize(ray_end_world - ray_start_world)))
             // {
@@ -124,6 +138,9 @@ void Controller::mouse_buttom_callback(GLFWwindow *window, int button, int actio
 
 void Controller::mouse_scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
+    (void) window;
+    (void) xoffset;
+
     m_camera->spherical_move(0, 0, -yoffset);
 }
 
