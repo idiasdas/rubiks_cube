@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     Log::init();
     OpenGLContext context("Rubik's Cube", 1280, 720);
     Cube cube(2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
-    Camera camera(&context, glm::vec3(0.0f, 0.0f, 5.0f));
+    Camera camera(&context);
     Controller::init(&context, &cube, &camera);
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     double last_time = glfwGetTime();

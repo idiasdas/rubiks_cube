@@ -9,40 +9,33 @@
 
 #include "opengl-context.h"
 
-enum class CameraConfig : int
-{
-    fly,
-    debug
-};
-
 class Camera
 {
 private:
     OpenGLContext *m_OpenGL_context;
+
     float m_horizontal_angle;
     float m_vertical_angle;
+    float m_radius;
     float m_FoV;
-    float m_speed;
-    float m_mouse_speed;
 
     glm::mat4 m_view_matrix;
     glm::mat4 m_projection_matrix;
     glm::vec3 m_position;
-    CameraConfig m_config;
 
 public:
     /*
         Needs the GLFWwindow *window handle to read inputs and update the camera position.
         As the camera moves, it updates the View and Projection matrices used to build the MVP for the OpenGL draw.
     */
-    Camera(OpenGLContext *const openGL_context, const glm::vec3 &position);
+    Camera(OpenGLContext *const openGL_context);
 
     glm::mat4 get_view_matrix() const { return m_view_matrix; }
     glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
+    glm::vec3 get_camera_position() const { return m_position;}
 
     /*
-        Reads the keyboard inputs from GLFW and updates the camera position accordingly.
-        Check the README.md for a description of the commands and corresponding actions.
+        Camera always look to the origin and moves around it. Recieves spherical coordinates displacement.
     */
-    void read_controls();
+    void spherical_move(double theta_move, double phy_move, double radius_move);
 };
