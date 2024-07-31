@@ -25,15 +25,13 @@ int main(int argc, char *argv[])
         0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 10.0f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.0f
-    };
+        0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.0f};
 
     axis_lines.buffer_vertices(buffer_lines);
 
-    std::vector<uint32_t> indices;
-    for (size_t i = 0; i < buffer_lines.size(); i++)
-        indices.push_back(i);
-    axis_lines.buffer_indices(indices);
+    axis_lines.buffer_indices({0, 1, 2, 3, 4, 5});
+
+    axis_lines.scale({5, 5, 5});
 
     Camera camera(&context);
     Controller::init(&context, &cube, &camera);
@@ -48,7 +46,7 @@ int main(int argc, char *argv[])
         double cur_time = glfwGetTime();
         double delta = cur_time - last_time;
 
-        if(delta > 1.0f)
+        if (delta > 1.0f)
         {
             LOG_INFO("FPS: {0}", frames_count / delta);
             last_time = cur_time;

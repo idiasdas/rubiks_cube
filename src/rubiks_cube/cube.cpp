@@ -210,7 +210,7 @@ Model Cube::get_piece(const float (&colors)[6][3], const glm::vec3 position)
     };
 
     std::vector<uint32_t> indices;
-    for (size_t i = 0; i < buffer.size(); i++)
+    for (size_t i = 0; i < buffer.size() / 6; i++)
         indices.push_back(i);
 
     piece.buffer_vertices(buffer);
