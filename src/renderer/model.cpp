@@ -67,6 +67,16 @@ void Model::draw(const Shader &shader, const glm::mat4 MVP) const
     glBindVertexArray(0);
 }
 
+void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const
+{
+    shader.bind();
+    uint32_t matrix_ID = shader.get_uniform_location("MVP");
+    glUniformMatrix4fv(matrix_ID, 1, GL_FALSE, &MVP[0][0]);
+    glBindVertexArray(m_vertex_array_ID);
+    glDrawElements(GL_LINES, m_indices_count, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
+}
+
 void Model::scale(const glm::vec3& scale_vector)
 {
     m_scale_matrix = glm::scale(glm::mat4(1), scale_vector) * m_scale_matrix;

@@ -10,7 +10,7 @@
 
 #define PI glm::pi<float>()
 
-#define EPS 0.00001f
+#define EPS 0.0001f
 
 #define WHITE   {1.0f, 1.0f, 1.0f}
 #define RED     {1.0f, 0.0f, 0.0f}

@@ -102,12 +102,11 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
 
 
     int closest_piece_hit = -1;
-    for (int i = 0; i < m_pieces.size(); i++)
+    for (int i = 0; i < (int) m_pieces.size(); i++)
     {
-        intersection_result = test_ray_cube_intersection(ray_origin, ray_direction, m_piece_size / 2.f, m_pieces[i].get_model_matrix(), &dist);
+        intersection_result = test_ray_cube_intersection(ray_origin, ray_direction, m_pieces[i].get_model_matrix(), &dist);
         if (intersection_result == IntersectionType::intersection && dist < closest_dist)
         {
-            LOG_INFO("Intersection with piece {0} ({1}, {2}, {3})", i, m_pieces_coordinates[i].x, m_pieces_coordinates[i].y, m_pieces_coordinates[i].z);
             closest_piece_hit = i;
             closest_dist = dist;
         }
@@ -116,7 +115,8 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
     if (closest_piece_hit == -1)
         return Face::none;
 
-    LOG_ERROR("No face match.");
+    LOG_INFO("Intersection with piece {0} ({1}, {2}, {3})", closest_piece_hit, m_pieces_coordinates[closest_piece_hit].x, m_pieces_coordinates[closest_piece_hit].y, m_pieces_coordinates[closest_piece_hit].z);
+
     return Face::none;
 }
 

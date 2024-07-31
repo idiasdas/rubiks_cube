@@ -15,12 +15,33 @@ int main(int argc, char *argv[])
 {
     Log::init();
     OpenGLContext context("Rubik's Cube", 1280, 720);
-    Cube cube(2.0f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
+
+    Cube cube(2.f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
+
+    Model axis_lines;
+    std::vector<float> buffer_lines = {
+        0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        10.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 10.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    axis_lines.buffer_vertices(buffer_lines);
+
+    std::vector<uint32_t> indices;
+    for (size_t i = 0; i < buffer_lines.size(); i++)
+        indices.push_back(i);
+    axis_lines.buffer_indices(indices);
+
     Camera camera(&context);
     Controller::init(&context, &cube, &camera);
+
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     double last_time = glfwGetTime();
     int frames_count = 0;
+
     do
     {
         frames_count++;
@@ -40,6 +61,7 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         cube.draw(color_shader, camera);
+        axis_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axis_lines.get_model_matrix());
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());

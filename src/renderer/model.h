@@ -37,18 +37,24 @@ public:
     void buffer_indices(const std::vector<uint32_t> buffer);
 
     /*
-        Draws the buffered vertices according to the buffered indices.
+        Draws the buffered vertices according to the buffered indices as triangles.
         The vertices are multiplied by the transformation matrix MVP.
         Uses the shader for the OpenGL draw call.
     */
     void draw(const Shader &shader, const glm::mat4 MVP) const;
 
+    /*
+        Draws the buffered vertices as lines.
+        The vertices are multiplied by the transformation matrix MVP.
+        Uses the shader for the OpenGL draw call.
+    */
+    void draw_lines(const Shader &shader, const glm::mat4 MVP) const;
 
     /*
         It scales the model on each axis according to the coordinates of scale_vector.
         For example, scale_vector == glm::vec3(10, 0, 0) streches the model by a factor of ten along the x-axis.
     */
-    void scale(const glm::vec3& scale_vector);
+    void scale(const glm::vec3 &scale_vector);
 
     /*
         Rotates the model around the rotation_axis.
@@ -57,21 +63,21 @@ public:
         coordinate system, you must first translate the model to the origin,
         rotate it around the axis, and then translate it to the correct position.
     */
-    void rotate(const float rotation_degree, const glm::vec3& rotation_axis);
+    void rotate(const float rotation_degree, const glm::vec3 &rotation_axis);
 
     /*
         Translates the model according to the translation_vector.
         For example, translation_vector == glm::vec3(10, 0, 0) moves the object 10 units along the x-axis.
     */
-    void translate(const glm::vec3& translation_vector);
+    void translate(const glm::vec3 &translation_vector);
 
-    void set_scale_matrix(const glm::mat4& scale_matrix) { m_scale_matrix = scale_matrix;}
-    void set_rotation_matrix(const glm::mat4& rotation_matrix) { m_rotation_matrix = rotation_matrix;}
-    void set_translation_matrix(const glm::mat4& translation_matrix) { m_translation_matrix = translation_matrix;}
+    void set_scale_matrix(const glm::mat4 &scale_matrix) { m_scale_matrix = scale_matrix; }
+    void set_rotation_matrix(const glm::mat4 &rotation_matrix) { m_rotation_matrix = rotation_matrix; }
+    void set_translation_matrix(const glm::mat4 &translation_matrix) { m_translation_matrix = translation_matrix; }
 
-    glm::mat4 get_scale_matrix() const { return m_scale_matrix;}
-    glm::mat4 get_rotation_matrix() const { return m_rotation_matrix;}
-    glm::mat4 get_translation_matrix() const { return m_translation_matrix;}
+    glm::mat4 get_scale_matrix() const { return m_scale_matrix; }
+    glm::mat4 get_rotation_matrix() const { return m_rotation_matrix; }
+    glm::mat4 get_translation_matrix() const { return m_translation_matrix; }
     glm::mat4 get_model_matrix() const { return m_translation_matrix * m_rotation_matrix * m_scale_matrix; }
 
 private:
