@@ -2,15 +2,15 @@
     Testing external modules initialization.
 */
 
-#include <gtest/gtest.h>
+#include <assert.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-TEST(External, GLFW_GLAD_INIT)
+int main(int argc, char *argv[])
 {
-    EXPECT_TRUE(glfwInit() != 0) << "Failed to initialize GLFW.";
+    assert(glfwInit() != 0);
 
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -19,12 +19,12 @@ TEST(External, GLFW_GLAD_INIT)
 
     GLFWwindow* window = glfwCreateWindow(600, 660, "Window Features", NULL, NULL);
 
-    EXPECT_TRUE(window != 0) << "Failed to create GLFWwindow.";
+    assert(window != 0);
 
     glfwSetInputMode(window, GLFW_UNLIMITED_MOUSE_BUTTONS, GLFW_TRUE);
 
     glfwMakeContextCurrent(window);
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-    EXPECT_TRUE(status != 0) << "Glad could not load from GLFW context.\n";
+    assert(status != 0);
 }
