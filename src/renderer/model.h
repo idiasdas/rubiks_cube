@@ -30,6 +30,8 @@ public:
     */
     void buffer_vertices(const std::vector<float> buffer);
 
+    void update_buffer_vertices(const std::vector<float> buffer);
+
     /*
         Creates an index buffer and loads it on the GPU.
         This is used to tell the GPU which vertices to draw.
