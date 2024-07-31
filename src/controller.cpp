@@ -87,6 +87,28 @@ void Controller::mouse_buttom_callback(GLFWwindow *window, int button, int actio
             std::string str_face = "none";
             LOG_INFO("Ray ({0}, {1}, {2}) -> ({3}, {4}, {5})", ray_start_world.x, ray_start_world.y, ray_start_world.z, ray_end_world.x, ray_end_world.y, ray_end_world.z);
 
+            switch (m_cube->ray_pick(ray_start_world, glm::normalize(ray_end_world - ray_start_world)))
+            {
+            case Face::front:
+                str_face = "front";
+                break;
+            case Face::back:
+                str_face = "back";
+                break;
+            case Face::right:
+                str_face = "right";
+                break;
+            case Face::left:
+                str_face = "left";
+                break;
+            case Face::top:
+                str_face = "top";
+                break;
+            case Face::bottom:
+                str_face = "bottom";
+                break;
+            }
+            LOG_INFO("Clicked on {0} face.", str_face);
         }
 
         else if (button == GLFW_MOUSE_BUTTON_2)

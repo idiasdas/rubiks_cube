@@ -9,10 +9,11 @@
 
 #include "renderer/model.h"
 #include "renderer/camera.h"
+#include "ray_picking.h"
 
 enum Face
 {
-    right = 0, top, front, left, bottom, back
+    right = 0, top, front, left, bottom, back, none
 };
 
 struct PieceCoordinates
@@ -64,6 +65,9 @@ public:
     */
     void resize(const float piece_size, const float gap_size);
 
+    Face ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const;
+
+
 private:
     Model get_piece(const float (&colors)[6][3], const glm::vec3 position);
     void set_piece_colors(const PieceCoordinates& piece_coordinates, float (&colors)[6][3]);
@@ -76,6 +80,7 @@ private:
         coordinate by piece_size + gap_size and then add this vector to the position of the cube.
     */
     PieceCoordinates get_original_piece_coordinates(const int piece_index) const;
+
 
 private:
     float m_piece_size;
