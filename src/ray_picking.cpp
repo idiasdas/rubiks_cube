@@ -26,7 +26,6 @@ IntersectionType test_ray_plane_intersection(const glm::vec3 ray_origin,
 
 IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
                                             const glm::vec3 ray_direction,
-                                            const float cube_size,
                                             const glm::mat4 cube_model_matrix,
                                             float *const intersection_distance)
 {
@@ -39,14 +38,16 @@ IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
     for (int i = 0; i < 3; i++)
     {
         glm::vec3 normal_vector = glm::vec3(cube_model_matrix[i].x, cube_model_matrix[i].y, cube_model_matrix[i].z);
+        float normal_dot_normal = glm::dot(normal_vector, normal_vector);
 
         float ray_normal_product = glm::dot(ray_direction, normal_vector);
         float ray_center_normal_dot = glm::dot(ray_center_vector, normal_vector);
-
+        float f1 = - ray_center_normal_dot + 1.f; // assuming standard cube on origin with length 2.f
+        float f2 = - ray_center_normal_dot - 1.f;
         if (std::abs(ray_normal_product) > EPS) // ray direction is not parallel to the faces
         {
-            float in_dist = (- ray_center_normal_dot + cube_size) / ray_normal_product;
-            float out_dist = (- ray_center_normal_dot - cube_size) / ray_normal_product;
+            float in_dist = f1 / ray_normal_product;
+            float out_dist = f2 / ray_normal_product;
 
             if (in_dist > out_dist)
             {
@@ -63,12 +64,12 @@ IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
         }
         else // ray direction is parallel or almost parallel to the faces
         {
-            if (ray_center_normal_dot - cube_size > 0.f || ray_center_normal_dot + cube_size < 0.f)
+            if (f1 < -EPS || f2 > EPS)
             {
                 // ray is parallalel to the face and outisde the cube
                 return IntersectionType::no_intersection;
             }
-            if (std::abs(ray_center_normal_dot) < cube_size + EPS)
+            else if (std::abs(f1) <= EPS || std::abs(f2) <= EPS)
             {
                 // ray is parallel to the face and on the face
                 return IntersectionType::undefined;

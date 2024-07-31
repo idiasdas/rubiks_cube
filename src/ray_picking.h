@@ -53,7 +53,6 @@ If it is on the cube's face, the the result is undefined.
 */
 IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
                                             const glm::vec3 ray_direction,
-                                            const float cube_size, // size of side / 2
                                             const glm::mat4 cube_model_matrix,
                                             float * const intersection_distance
                                             );
