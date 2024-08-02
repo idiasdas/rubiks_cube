@@ -38,8 +38,6 @@ IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
     for (int i = 0; i < 3; i++)
     {
         glm::vec3 normal_vector = glm::vec3(cube_model_matrix[i].x, cube_model_matrix[i].y, cube_model_matrix[i].z);
-        float normal_dot_normal = glm::dot(normal_vector, normal_vector);
-
         float ray_normal_product = glm::dot(ray_direction, normal_vector);
         float ray_center_normal_dot = glm::dot(ray_center_vector, normal_vector);
         float f1 = - ray_center_normal_dot + 1.f; // assuming standard cube on origin with length 2.f

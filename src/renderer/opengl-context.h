@@ -16,7 +16,7 @@ public:
         Exits with EXIT_FAILURE if any errors occur.
         Every interaction with GLFW requires the GLFWwindow* m_window.
     */
-    OpenGLContext(const std::string& window_name, const int window_width, const int window_height);
+    OpenGLContext(const std::string &window_name, const int window_width, const int window_height);
 
     inline std::string get_window_name() const { return m_window_name; }
     inline int get_window_width() const { return m_window_width; }
