@@ -102,7 +102,7 @@ The following are the commands you can use:
 - [x] Movement animation
 - [x] Animation queue
 - [ ] Dynamic resize
-- [ ] Event system
+- [x] Event system
 - [x] Log system
 - [ ] ImGui control and debug window
 - [x] Varying move animation speed
