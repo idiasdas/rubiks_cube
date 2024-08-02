@@ -4,6 +4,8 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
 {
     m_piece_size = piece_size;
     m_gap_size = gap_size;
+    m_moves = std::queue<Move>();
+    m_animation_speed = 5.f;
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
@@ -85,6 +87,40 @@ bool Cube::is_piece_on_face(const PieceCoordinates& piece_coordinates, const Fac
     }
 }
 
+void Cube::cube_control(const int key, const int action)
+{
+    static bool clockwise = true;
+
+    // R to reset cube to initial (solved) state
+    if (key == GLFW_KEY_R && action == GLFW_PRESS)
+    {
+        m_moves.push({Face::front, 0});
+    }
+    // Hold Left Shift to rotate face counterclockwise
+    else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
+        clockwise = false;
+    else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
+        clockwise = true;
+    else
+    {
+        int keys[] = {GLFW_KEY_KP_8, GLFW_KEY_KP_2, GLFW_KEY_KP_4, GLFW_KEY_KP_6, GLFW_KEY_KP_0, GLFW_KEY_KP_5};
+        Face faces[] = {Face::top, Face::bottom, Face::left, Face::right, Face::back, Face::front};
+
+        for (int i = 0; i < 6; i++)
+        {
+            // Rotate face with number keys
+            if (key == keys[i] && action == GLFW_PRESS)
+            {
+                if (clockwise)
+                    m_moves.push({faces[i], 1});
+                else
+                    m_moves.push({faces[i], -1});
+                break;
+            }
+        }
+    }
+}
+
 PieceCoordinates Cube::get_original_piece_coordinates(const int piece_index) const
 {
     PieceCoordinates piece_coordinates;
@@ -133,6 +169,11 @@ void Cube::reset()
     }
 }
 
+void Cube::on_update()
+{
+    run_animation();
+}
+
 void Cube::round_pieces_positions()
 {
     const float step = m_piece_size + m_gap_size;
@@ -143,6 +184,19 @@ void Cube::round_pieces_positions()
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].translate({std::round(x) * step, std::round(y) * step, std::round(z) * step});
     }
+}
+
+void Cube::on_event(Event &event)
+{
+    if (event.get_event_type() == EventType::key_press)
+    {
+        cube_control(((KeyPressEvent*)&event)->get_key(), GLFW_PRESS);
+    }
+    else if (event.get_event_type() == EventType::key_release)
+    {
+        cube_control(((KeyReleaseEvent*)&event)->get_key(), GLFW_RELEASE);
+    }
+    // else if ()
 }
 
 void Cube::resize(const float piece_size, const float gap_size)
@@ -280,4 +334,48 @@ void Cube::rotate_face(const Face face_index, const float rotation_degrees)
             m_pieces[i].translate({m_pieces_coordinates[i].x * step, m_pieces_coordinates[i].y * step, m_pieces_coordinates[i].z * step});
         }
     }
+}
+
+void Cube::run_animation()
+{
+    static CubeState s_state = CubeState::wait_input;
+
+    if (m_moves.empty())
+        return;
+
+    static double last_time = glfwGetTime();
+    static double total_angle = 0.0f;
+
+    if (m_moves.front().direction == 0)
+    {
+        reset();
+        m_moves.pop();
+        return;
+    }
+
+    if (s_state == CubeState::wait_input)
+    {
+        s_state = CubeState::rotate_face;
+        last_time = glfwGetTime();
+    }
+
+    const double cur_time = glfwGetTime();
+    const double delta_time = cur_time - last_time;
+
+    if (delta_time < 1.f / 60.f)
+        return;
+
+    const double cur_angle = std::min((PI / 2.f) * delta_time * m_animation_speed * m_moves.size(), PI / 2.f - total_angle);
+    total_angle += cur_angle;
+    rotate_face(m_moves.front().face, cur_angle * (float)m_moves.front().direction);
+
+    if (total_angle >= PI / 2.f)
+    {
+        round_pieces_positions();
+        total_angle = 0.0f;
+        m_moves.pop();
+        s_state = CubeState::wait_input;
+    }
+
+    last_time = cur_time;
 }

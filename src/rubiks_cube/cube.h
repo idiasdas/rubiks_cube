@@ -6,14 +6,23 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <cmath>
+#include <queue>
 
+#include "events.h"
 #include "renderer/model.h"
 #include "renderer/camera.h"
 #include "ray_picking.h"
 
+
 enum Face
 {
     right = 0, top, front, left, bottom, back, none
+};
+
+enum class CubeState
+{
+    wait_input,
+    rotate_face
 };
 
 struct PieceCoordinates
@@ -21,6 +30,12 @@ struct PieceCoordinates
     float x;
     float y;
     float z;
+};
+
+struct Move
+{
+    Face face;
+    int direction; // 1 for clockwise, -1 for counterclockwise
 };
 
 class Cube
@@ -49,16 +64,24 @@ public:
     void rotate_face(const Face face_index, const float rotation_degrees);
 
     /*
-        Reades the keyboard inputs from OpenGL and apply the corresponding moves to the cube.
-    */
-    void read_controls(OpenGLContext *const openGL_context);
-
-    /*
         Reset cube to initial (solved) state.
     */
     void reset();
 
+    /*
+        Every frame it runs the animations for the movement queue.
+    */
+    void on_update();
+
+    /*
+        If a face has been rotated in between 0 and 90 degress. It completes the rotation to the nearest angle.
+    */
     void round_pieces_positions();
+
+    /*
+        Treats input events.
+    */
+    void on_event(Event& event);
 
     /*
         Resizes the cube to the piece_size and gap_size
@@ -72,6 +95,8 @@ private:
     Model get_piece(const float (&colors)[6][3], const glm::vec3 position);
     void set_piece_colors(const PieceCoordinates& piece_coordinates, float (&colors)[6][3]);
     bool is_piece_on_face(const PieceCoordinates& piece_coordinates, const Face face_index) const;
+    void cube_control(const int key, const int action);
+    void run_animation();
 
     /*
         Return the coordinates of the piece relative to the cube's center.
@@ -88,4 +113,6 @@ private:
     float m_colors[6][3];
     std::vector<Model> m_pieces;
     std::vector<PieceCoordinates> m_pieces_coordinates;
+    std::queue<Move> m_moves;
+    float m_animation_speed;
 };
