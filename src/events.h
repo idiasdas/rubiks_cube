@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 
+#include "glm/glm.hpp"
+
 enum class EventType
 {
     none = 0,
@@ -15,7 +17,8 @@ enum class EventType
     mouse_button_press,
     mouse_button_release,
     mouse_move,
-    mouse_scroll
+    mouse_scroll,
+    ray
 };
 
 #define EVENT_CLASS_TYPE(type)                                     \
@@ -187,4 +190,27 @@ public:
 
 private:
     int m_yoffset;
+};
+
+class RayEvent : public Event
+{
+public:
+    RayEvent( glm::vec3 origin, glm::vec3 direction)
+        : m_origin(origin), m_direction(direction) {}
+
+    glm::vec3 get_origin() { return m_origin;}
+    glm::vec3 get_direction() { return m_direction;}
+
+    std::string to_string() const override
+    {
+        std::stringstream ss;
+        ss << "RayEvent (" << m_origin.x << ", " << m_origin.y << ", " << m_origin.z << ") (" << m_direction.x << ", " << m_direction.y << ", " << m_direction.z << ")";
+        return ss.str();
+    }
+
+    EVENT_CLASS_TYPE(ray)
+
+private:
+    glm::vec3 m_origin;
+    glm::vec3 m_direction;
 };

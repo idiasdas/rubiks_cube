@@ -196,7 +196,12 @@ void Cube::on_event(Event &event)
     {
         cube_control(((KeyReleaseEvent*)&event)->get_key(), GLFW_RELEASE);
     }
-    // else if ()
+    else if (event.get_event_type() == EventType::ray)
+    {
+        glm::vec3 origin = ((RayEvent*)&event)->get_origin();
+        glm::vec3 direction = ((RayEvent*)&event)->get_direction();
+        ray_pick(origin, direction);
+    }
 }
 
 void Cube::resize(const float piece_size, const float gap_size)

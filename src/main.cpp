@@ -48,7 +48,8 @@ void event_manager(Event &event)
             g_ray->update_buffer_vertices({ray_origin_world.x, ray_origin_world.y, ray_origin_world.z, 0.8f, 0.8f, 0.2f,
                                 500.f * ray_end_world.x + ray_origin_world.x, 500.f * ray_end_world.y + ray_origin_world.y, 500.f * ray_end_world.z + ray_origin_world.z, 0.8f, 0.8f, 0.2f});
 
-            g_cube->ray_pick(ray_origin_world, ray_end_world);
+            RayEvent ray_event(ray_origin_world, ray_end_world);
+            event_manager(ray_event);
         }
     }
 }
