@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 #include "log.h"
+#include "events.h"
 
 class OpenGLContext
 {
@@ -22,6 +23,8 @@ public:
     inline int get_window_width() const { return m_window_width; }
     inline int get_window_height() const { return m_window_height; }
     inline GLFWwindow *get_window_handle() const { return m_window; }
+
+    void set_events_callbacks(void (*f_event_manager)(Event &event));
 
 private:
     GLFWwindow *m_window;

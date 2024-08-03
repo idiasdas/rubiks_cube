@@ -60,3 +60,53 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     // Do not draw polygons if the camera is inside them
     glEnable(GL_CULL_FACE);
 }
+
+void OpenGLContext::set_events_callbacks(void (*f_event_manager)(Event &event))
+{
+    static void (*s_f_event_manager)(Event &event) = f_event_manager;
+
+    glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods){
+        (void) window;
+        (void) scancode;
+        (void) mods;
+        if (action == GLFW_PRESS)
+        {
+            KeyPressEvent event(key);
+            s_f_event_manager(event);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            KeyReleaseEvent event(key);
+            s_f_event_manager(event);
+        }
+    });
+
+    glfwSetCursorPosCallback(m_window, [](GLFWwindow *window, double xpos, double ypos){
+        (void) window;
+        MouseMoveEvent event(xpos, ypos);
+        s_f_event_manager(event);
+    });
+
+    glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int mods){
+        (void) mods;
+        if (action == GLFW_PRESS)
+        {
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            MouseButtonPressEvent event(button, xpos, ypos);
+            s_f_event_manager(event);
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            MouseButtonReleaseEvent event(button);
+            s_f_event_manager(event);
+        }
+    });
+
+    glfwSetScrollCallback(m_window, [](GLFWwindow *window, double xoffset, double yoffset){
+        (void) window;
+        (void) xoffset;
+        MouseScrollEvent event(yoffset);
+        s_f_event_manager(event);
+    });
+}

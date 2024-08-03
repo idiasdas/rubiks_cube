@@ -10,15 +10,14 @@
 #include "renderer/model.h"
 #include "renderer/camera.h"
 #include "rubiks_cube/cube.h"
-#include "controller.h"
 
 OpenGLContext *g_context = nullptr;
 Cube *g_cube = nullptr;
 Camera *g_camera = nullptr;
+Model *g_ray = nullptr;
 
-void manage_events(Event &event)
+void event_manager(Event &event)
 {
-    LOG_INFO("Event log: {0}", event.to_string());
     g_cube->on_event(event);
     g_camera->on_event(event);
 
@@ -26,52 +25,33 @@ void manage_events(Event &event)
     {
         if (((MouseButtonPressEvent *)&event)->get_button() == GLFW_MOUSE_BUTTON_1)
         {
-            // create ray
+            float xpos = ((MouseButtonPressEvent *)&event)->get_xpos();
+            float ypos = ((MouseButtonPressEvent *)&event)->get_ypos();
+
+            glm::vec4 ray_start_NDC((xpos / (float)g_context->get_window_width() - 0.5f) * 2.0f,
+                                    -(ypos / (float)g_context->get_window_height() - 0.5f) * 2.0f,
+                                    -1.f,
+                                    1.0f);
+
+            glm::vec4 ray_end_NDC((xpos / (float)g_context->get_window_width() - 0.5f) * 2.0f,
+                                  -(ypos / (float)g_context->get_window_height() - 0.5f) * 2.0f,
+                                  0.f,
+                                  1.0f);
+
+            glm::mat4 inverse_projection_view = glm::inverse(g_camera->get_projection_matrix() * g_camera->get_view_matrix());
+            glm::vec4 ray_origin_world = inverse_projection_view * ray_start_NDC;
+            ray_origin_world /= ray_origin_world.w;
+            glm::vec4 ray_end_world = inverse_projection_view * ray_end_NDC;
+            ray_end_world /= ray_end_world.w;
+
+            ray_end_world = glm::normalize(ray_end_world - ray_origin_world);
+            g_ray->update_buffer_vertices({ray_origin_world.x, ray_origin_world.y, ray_origin_world.z, 0.8f, 0.8f, 0.2f,
+                                500.f * ray_end_world.x + ray_origin_world.x, 500.f * ray_end_world.y + ray_origin_world.y, 500.f * ray_end_world.z + ray_origin_world.z, 0.8f, 0.8f, 0.2f});
+
+            g_cube->ray_pick(ray_origin_world, ray_end_world);
         }
     }
 }
-
-void set_glfw_callbacks()
-{
-    glfwSetKeyCallback(g_context->get_window_handle(), [](GLFWwindow *window, int key, int scancode, int action, int mods){
-        if (action == GLFW_PRESS)
-        {
-            KeyPressEvent event(key);
-            manage_events(event);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            KeyReleaseEvent event(key);
-            manage_events(event);
-        }
-    });
-
-    glfwSetCursorPosCallback(g_context->get_window_handle(), [](GLFWwindow *window, double xpos, double ypos){
-        MouseMoveEvent event(xpos, ypos);
-        manage_events(event);
-    });
-
-    glfwSetMouseButtonCallback(g_context->get_window_handle(), [](GLFWwindow *window, int button, int action, int mods){
-        if (action == GLFW_PRESS)
-        {
-            double xpos, ypos;
-            glfwGetCursorPos(g_context->get_window_handle(), &xpos, &ypos);
-            MouseButtonPressEvent event(button, xpos, ypos);
-            manage_events(event);
-        }
-        else if (action == GLFW_RELEASE)
-        {
-            MouseButtonReleaseEvent event(button);
-            manage_events(event);
-        }
-    });
-
-    glfwSetScrollCallback(g_context->get_window_handle(), [](GLFWwindow *window, double xoffset, double yoffset){
-        MouseScrollEvent event(yoffset);
-        manage_events(event);
-    });
-}
-
 
 int main()
 {
@@ -80,7 +60,10 @@ int main()
     OpenGLContext context("Rubik's Cube", 1280, 720);
     g_context = &context;
 
-    set_glfw_callbacks();
+    context.set_events_callbacks(event_manager);
+
+    Camera camera(&context);
+    g_camera = &camera;
 
     Cube cube(2.f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE});
     g_cube = &cube;
@@ -98,17 +81,12 @@ int main()
 
     axes_lines.buffer_indices({0, 1, 2, 3, 4, 5});
 
-    // Model ray;
-    // glm::vec3 ray_origin = {1.f, 0.f, 0.f};
-    // glm::vec3 ray_direction = {0.f, 0.f, 0.f};
-    // ray.buffer_vertices({0.0f, 0.0f, 0.0f, .8f, 0.8f, 0.2f,
-                        //  10.0f, 10.0f, 0.0f, .8f, 0.8f, 0.2f});
-    // ray.buffer_indices({0, 1});
+    Model ray;
+    ray.buffer_vertices({0.0f, 0.0f, 0.0f, .8f, 0.8f, 0.2f,
+                         10.0f, 10.0f, 0.0f, .8f, 0.8f, 0.2f});
+    ray.buffer_indices({0, 1});
 
-    Camera camera(&context);
-    g_camera = &camera;
-
-    // Controller::init(&context, &cube, &camera, manage_events);
+    g_ray = &ray;
 
     Shader color_shader("shaders/color.vertexShader", "shaders/color.fragmentShader");
     double last_time = glfwGetTime();
@@ -127,32 +105,13 @@ int main()
             frames_count = 0;
         }
 
-        // Controller::update();
-
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        cube.on_update();
         cube.draw(color_shader, camera);
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
-
-        cube.on_update();
-
-        // glm::vec3 new_ray_origin = Controller::get_ray_origin();
-
-        // if (new_ray_origin != ray_origin)
-        // {
-        //     LOG_INFO("Update ray origin");
-        //     ray_direction = Controller::get_ray_direction();
-        //     ray_origin = new_ray_origin;
-
-        //     ray.update_buffer_vertices({ray_origin.x, ray_origin.y, ray_origin.z, 0.8f, 0.8f, 0.2f,
-        //                                 500.f * ray_direction.x + ray_origin.x, 500.f * ray_direction.y + ray_origin.y, 500.f * ray_direction.z + ray_origin.z, 0.8f, 0.8f, 0.2f});
-        // }
-
-        // if (ray_origin != glm::vec3(0.f, 0.f, 0.f))
-        // {
-        //     ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
-        // }
+        ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
 
         // Swap buffers
         glfwSwapBuffers(context.get_window_handle());

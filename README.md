@@ -119,5 +119,3 @@ The following are the commands you can use:
 ### 31/07
 
 - New camera: Before, the camera was free so you could fly around. Now, it is always looking at the cube's center. It moves on the sphere centered at the cube. Hold `Mouse 2` and move the mouse to move the camera. Use the `Mouse Scroll` to control the distance between the camera and the cube.
-
-- Ray casting and ray picking:
