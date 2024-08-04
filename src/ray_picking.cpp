@@ -13,7 +13,7 @@ IntersectionType test_ray_plane_intersection(const glm::vec3 ray_origin,
 
     if (std::abs(ray_dir_normal_product) > EPS)
     {
-        *intersection_distance = - ray_center_dot_normal / ray_dir_normal_product;
+        *intersection_distance = -ray_center_dot_normal / ray_dir_normal_product;
         return IntersectionType::intersection;
     }
     else if (std::abs(ray_center_dot_normal) <= EPS)
@@ -40,8 +40,8 @@ IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
         glm::vec3 normal_vector = glm::vec3(cube_model_matrix[i].x, cube_model_matrix[i].y, cube_model_matrix[i].z);
         float ray_normal_product = glm::dot(ray_direction, normal_vector);
         float ray_center_normal_dot = glm::dot(ray_center_vector, normal_vector);
-        float f1 = - ray_center_normal_dot + 1.f; // assuming standard cube on origin with length 2.f
-        float f2 = - ray_center_normal_dot - 1.f;
+        float f1 = -ray_center_normal_dot + 1.f; // assuming standard cube on origin with length 2.f (before scalling)
+        float f2 = -ray_center_normal_dot - 1.f;
         if (std::abs(ray_normal_product) > EPS) // ray direction is not parallel to the faces
         {
             float in_dist = f1 / ray_normal_product;
@@ -77,4 +77,27 @@ IntersectionType test_ray_cube_intersection(const glm::vec3 ray_origin,
 
     *intersection_distance = max_in_dist;
     return IntersectionType::intersection;
+}
+
+void create_ray_from_screen(float xpos, float ypos, OpenGLContext *context, Camera *camera, glm::vec3 &ray_origin, glm::vec3 &ray_direction)
+{
+    glm::vec4 ray_start_NDC((xpos / (float)context->get_window_width() - 0.5f) * 2.0f,
+                            -(ypos / (float)context->get_window_height() - 0.5f) * 2.0f,
+                            -1.f,
+                            1.0f);
+
+    glm::vec4 ray_end_NDC((xpos / (float)context->get_window_width() - 0.5f) * 2.0f,
+                          -(ypos / (float)context->get_window_height() - 0.5f) * 2.0f,
+                          0.f,
+                          1.0f);
+
+    glm::mat4 inverse_projection_view = glm::inverse(camera->get_projection_matrix() * camera->get_view_matrix());
+    glm::vec4 ray_origin_world = inverse_projection_view * ray_start_NDC;
+    ray_origin_world /= ray_origin_world.w;
+    glm::vec4 ray_end_world = inverse_projection_view * ray_end_NDC;
+    ray_end_world /= ray_end_world.w;
+    ray_end_world = glm::normalize(ray_end_world - ray_origin_world);
+
+    ray_origin = ray_origin_world;
+    ray_direction = ray_end_world;
 }

@@ -19,7 +19,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
         {
             for (int x = -1; x <= 1; x++)
             {
-                PieceCoordinates piece_coordinates = {(float) x, (float) y, (float) z};
+                PieceCoordinates piece_coordinates = {(float)x, (float)y, (float)z};
                 set_piece_colors(piece_coordinates, piece_colors);
                 m_pieces.push_back(get_piece(piece_colors, glm::vec3({x * step, y * step, z * step})));
                 m_pieces_coordinates.push_back(piece_coordinates);
@@ -28,7 +28,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
     }
 }
 
-void Cube::set_piece_colors(const PieceCoordinates& piece_coordinates, float (&colors)[6][3])
+void Cube::set_piece_colors(const PieceCoordinates &piece_coordinates, float (&colors)[6][3])
 {
     // set all faces to black
     for (int i = 0; i < 6; i++)
@@ -66,7 +66,7 @@ void Cube::set_piece_colors(const PieceCoordinates& piece_coordinates, float (&c
             colors[Face::back][i] = m_colors[Face::back][i];
 }
 
-bool Cube::is_piece_on_face(const PieceCoordinates& piece_coordinates, const Face face_index) const
+bool Cube::is_piece_on_face(const PieceCoordinates &piece_coordinates, const Face face_index) const
 {
     switch (face_index)
     {
@@ -124,9 +124,9 @@ void Cube::cube_control(const int key, const int action)
 PieceCoordinates Cube::get_original_piece_coordinates(const int piece_index) const
 {
     PieceCoordinates piece_coordinates;
-    piece_coordinates.x = (float) (piece_index % 3) - 1;
-    piece_coordinates.y = (float) ((piece_index / 3) % 3) - 1;
-    piece_coordinates.z = (float) (piece_index / 9) - 1;
+    piece_coordinates.x = (float)(piece_index % 3) - 1;
+    piece_coordinates.y = (float)((piece_index / 3) % 3) - 1;
+    piece_coordinates.z = (float)(piece_index / 9) - 1;
     return piece_coordinates;
 }
 
@@ -136,9 +136,8 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
     float dist = 10000.0f;
     float closest_dist = 10000.0f;
 
-
     int closest_piece_hit = -1;
-    for (int i = 0; i < (int) m_pieces.size(); i++)
+    for (int i = 0; i < (int)m_pieces.size(); i++)
     {
         intersection_result = test_ray_cube_intersection(ray_origin, ray_direction, m_pieces[i].get_model_matrix(), &dist);
         if (intersection_result == IntersectionType::intersection && dist < closest_dist)
@@ -148,12 +147,50 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
         }
     }
 
+    Face intersec_face = Face::none;
+    std::string face_str = "none";
+
     if (closest_piece_hit == -1)
-        return Face::none;
+        return intersec_face;
 
-    LOG_INFO("Intersection with piece {0} ({1}, {2}, {3})", closest_piece_hit, m_pieces_coordinates[closest_piece_hit].x, m_pieces_coordinates[closest_piece_hit].y, m_pieces_coordinates[closest_piece_hit].z);
+    glm::vec3 intersec_point = ray_origin + closest_dist * ray_direction;
 
-    return Face::none;
+    float cube_size = m_gap_size + 1.5f * m_piece_size;
+
+    if (intersec_point.x == cube_size)
+    {
+        intersec_face = Face::right;
+        face_str = "right";
+    }
+    else if (intersec_point.x == - cube_size)
+    {
+        intersec_face = Face::left;
+        face_str = "left";
+    }
+    else if (intersec_point.y == cube_size)
+    {
+        intersec_face = Face::top;
+        face_str = "top";
+    }
+    else if (intersec_point.y == - cube_size)
+    {
+        intersec_face = Face::bottom;
+        face_str = "bottom";
+    }
+    else if (intersec_point.z == cube_size)
+    {
+        intersec_face = Face::front;
+        face_str = "front";
+    }
+    else if (intersec_point.z == - cube_size)
+    {
+        intersec_face = Face::back;
+        face_str = "back";
+    }
+
+    LOG_INFO("Intersection with piece {0}. Intersection point: ({1}, {2}, {3}). Intersection face: {4}", closest_piece_hit, intersec_point.x, intersec_point.y, intersec_point.z, face_str);
+
+    return intersec_face;
 }
 
 void Cube::reset()
@@ -163,7 +200,7 @@ void Cube::reset()
     {
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].set_rotation_matrix(glm::mat4(1));
-        auto[x, y, z] = get_original_piece_coordinates(i);
+        auto [x, y, z] = get_original_piece_coordinates(i);
         m_pieces_coordinates[i] = {x, y, z};
         m_pieces[i].translate({x * step, y * step, z * step});
     }
@@ -179,7 +216,7 @@ void Cube::round_pieces_positions()
     const float step = m_piece_size + m_gap_size;
     for (int i = 0; i < 27; i++)
     {
-        auto[x, y, z] = m_pieces_coordinates[i];
+        auto [x, y, z] = m_pieces_coordinates[i];
         m_pieces_coordinates[i] = {std::round(x), std::round(y), std::round(z)};
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].translate({std::round(x) * step, std::round(y) * step, std::round(z) * step});
@@ -190,16 +227,16 @@ void Cube::on_event(Event &event)
 {
     if (event.get_event_type() == EventType::key_press)
     {
-        cube_control(((KeyPressEvent*)&event)->get_key(), GLFW_PRESS);
+        cube_control(((KeyPressEvent *)&event)->get_key(), GLFW_PRESS);
     }
     else if (event.get_event_type() == EventType::key_release)
     {
-        cube_control(((KeyReleaseEvent*)&event)->get_key(), GLFW_RELEASE);
+        cube_control(((KeyReleaseEvent *)&event)->get_key(), GLFW_RELEASE);
     }
     else if (event.get_event_type() == EventType::ray)
     {
-        glm::vec3 origin = ((RayEvent*)&event)->get_origin();
-        glm::vec3 direction = ((RayEvent*)&event)->get_direction();
+        glm::vec3 origin = ((RayEvent *)&event)->get_origin();
+        glm::vec3 direction = ((RayEvent *)&event)->get_direction();
         ray_pick(origin, direction);
     }
 }
@@ -213,7 +250,7 @@ void Cube::resize(const float piece_size, const float gap_size)
     {
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].set_scale_matrix(glm::mat4(1));
-        auto[x, y, z] = m_pieces_coordinates[i];
+        auto [x, y, z] = m_pieces_coordinates[i];
         m_pieces[i].scale({m_piece_size / 2.f, m_piece_size / 2.f, m_piece_size / 2.f});
         m_pieces[i].translate({x * step, y * step, z * step});
     }

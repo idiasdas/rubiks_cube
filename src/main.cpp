@@ -27,28 +27,13 @@ void event_manager(Event &event)
         {
             float xpos = ((MouseButtonPressEvent *)&event)->get_xpos();
             float ypos = ((MouseButtonPressEvent *)&event)->get_ypos();
+            glm::vec3 ray_origin, ray_direction;
+            create_ray_from_screen(xpos, ypos, g_context, g_camera, ray_origin, ray_direction);
 
-            glm::vec4 ray_start_NDC((xpos / (float)g_context->get_window_width() - 0.5f) * 2.0f,
-                                    -(ypos / (float)g_context->get_window_height() - 0.5f) * 2.0f,
-                                    -1.f,
-                                    1.0f);
+            g_ray->update_buffer_vertices({ray_origin.x, ray_origin.y, ray_origin.z, 0.8f, 0.8f, 0.2f,
+                                           500.f * ray_direction.x + ray_origin.x, 500.f * ray_direction.y + ray_origin.y, 500.f * ray_direction.z + ray_origin.z, 0.8f, 0.8f, 0.2f});
 
-            glm::vec4 ray_end_NDC((xpos / (float)g_context->get_window_width() - 0.5f) * 2.0f,
-                                  -(ypos / (float)g_context->get_window_height() - 0.5f) * 2.0f,
-                                  0.f,
-                                  1.0f);
-
-            glm::mat4 inverse_projection_view = glm::inverse(g_camera->get_projection_matrix() * g_camera->get_view_matrix());
-            glm::vec4 ray_origin_world = inverse_projection_view * ray_start_NDC;
-            ray_origin_world /= ray_origin_world.w;
-            glm::vec4 ray_end_world = inverse_projection_view * ray_end_NDC;
-            ray_end_world /= ray_end_world.w;
-
-            ray_end_world = glm::normalize(ray_end_world - ray_origin_world);
-            g_ray->update_buffer_vertices({ray_origin_world.x, ray_origin_world.y, ray_origin_world.z, 0.8f, 0.8f, 0.2f,
-                                500.f * ray_end_world.x + ray_origin_world.x, 500.f * ray_end_world.y + ray_origin_world.y, 500.f * ray_end_world.z + ray_origin_world.z, 0.8f, 0.8f, 0.2f});
-
-            RayEvent ray_event(ray_origin_world, ray_end_world);
+            RayEvent ray_event(ray_origin, ray_direction);
             event_manager(ray_event);
         }
     }
@@ -58,10 +43,8 @@ int main()
 {
     Log::init();
 
-    OpenGLContext context("Rubik's Cube", 1280, 720);
+    OpenGLContext context("Rubik's Cube", 1280, 720, event_manager);
     g_context = &context;
-
-    context.set_events_callbacks(event_manager);
 
     Camera camera(&context);
     g_camera = &camera;

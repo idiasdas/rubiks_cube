@@ -1,10 +1,11 @@
 #include "opengl-context.h"
 
-OpenGLContext::OpenGLContext(const std::string &window_name, const int window_width, const int window_height)
+OpenGLContext::OpenGLContext(const std::string &window_name, const int window_width, const int window_height, void (*func_event_manager)(Event& event))
 {
     m_window_name = window_name;
     m_window_width = window_width;
     m_window_height = window_height;
+    m_func_event_manager = func_event_manager;
 
     // Initializing GLFW
     if (!glfwInit())
@@ -59,54 +60,58 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glDepthFunc(GL_LESS);
     // Do not draw polygons if the camera is inside them
     glEnable(GL_CULL_FACE);
+
+
+    glfwSetWindowUserPointer(m_window, this);
+    set_events_callbacks();
 }
 
-void OpenGLContext::set_events_callbacks(void (*f_event_manager)(Event &event))
+void OpenGLContext::set_events_callbacks()
 {
-    static void (*s_f_event_manager)(Event &event) = f_event_manager;
-
     glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods){
-        (void) window;
         (void) scancode;
         (void) mods;
+        OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
         if (action == GLFW_PRESS)
         {
             KeyPressEvent event(key);
-            s_f_event_manager(event);
+            context->run_event_manager(event);
         }
         else if (action == GLFW_RELEASE)
         {
             KeyReleaseEvent event(key);
-            s_f_event_manager(event);
+            context->run_event_manager(event);
         }
     });
 
     glfwSetCursorPosCallback(m_window, [](GLFWwindow *window, double xpos, double ypos){
-        (void) window;
+        OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
         MouseMoveEvent event(xpos, ypos);
-        s_f_event_manager(event);
+        context->run_event_manager(event);
     });
 
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int mods){
         (void) mods;
+        OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
         if (action == GLFW_PRESS)
         {
             double xpos, ypos;
             glfwGetCursorPos(window, &xpos, &ypos);
             MouseButtonPressEvent event(button, xpos, ypos);
-            s_f_event_manager(event);
+            context->run_event_manager(event);
         }
         else if (action == GLFW_RELEASE)
         {
             MouseButtonReleaseEvent event(button);
-            s_f_event_manager(event);
+            context->run_event_manager(event);
         }
     });
 
     glfwSetScrollCallback(m_window, [](GLFWwindow *window, double xoffset, double yoffset){
-        (void) window;
         (void) xoffset;
+        OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
         MouseScrollEvent event(yoffset);
-        s_f_event_manager(event);
+        context->run_event_manager(event);
+    });
     });
 }
