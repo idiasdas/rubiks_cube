@@ -51,10 +51,11 @@ public:
 class WindowResizeEvent : public Event
 {
 public:
-    WindowResizeEvent() {}
+    WindowResizeEvent(int width, int heigth)
+        : m_width(width), m_height(heigth) {}
 
-    inline uint32_t get_width() const { return m_width; }
-    inline uint32_t get_height() const { return m_height; }
+    inline int get_width() const { return m_width; }
+    inline int get_height() const { return m_height; }
 
     std::string to_string() const override
     {
@@ -65,7 +66,7 @@ public:
     EVENT_CLASS_TYPE(window_resize)
 
 private:
-    uint32_t m_width, m_height;
+    int m_width, m_height;
 };
 
 class KeyPressEvent : public Event

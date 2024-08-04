@@ -113,5 +113,14 @@ void OpenGLContext::set_events_callbacks()
         MouseScrollEvent event(yoffset);
         context->run_event_manager(event);
     });
+
+    glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
+        OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
+        context->set_window_height(height);
+        context->set_window_width(width);
+
+        glViewport(0, 0, width, height);
+        WindowResizeEvent event(width, height);
+        context->run_event_manager(event);
     });
 }

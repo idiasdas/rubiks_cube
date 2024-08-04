@@ -101,7 +101,7 @@ The following are the commands you can use:
 - [x] Move pieces
 - [x] Movement animation
 - [x] Animation queue
-- [ ] Dynamic resize
+- [x] Dynamic resize
 - [x] Event system
 - [x] Log system
 - [ ] ImGui control and debug window
