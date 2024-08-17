@@ -32,20 +32,10 @@ private:
     glm::vec3 m_position;
 
 public:
-    /*
-        Needs the GLFWwindow *window handle to read inputs and update the camera position.
-        As the camera moves, it updates the View and Projection matrices used to build the MVP for the OpenGL draw.
-    */
     Camera(OpenGLContext *const openGL_context);
-
     glm::mat4 get_view_matrix() const { return m_view_matrix; }
     glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
     glm::vec3 get_camera_position() const { return m_position;}
-
     void on_event(Event& event);
-
-    /*
-        Camera always look to the origin and moves around it. Recieves spherical coordinates displacement.
-    */
     void spherical_move(double theta_move, double phy_move, double radius_move);
 };

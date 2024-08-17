@@ -1,7 +1,3 @@
-/*
-    Testing external modules initialization.
-*/
-
 #include <assert.h>
 
 #include <glad/glad.h>

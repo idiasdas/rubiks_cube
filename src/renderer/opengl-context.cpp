@@ -7,14 +7,12 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     m_window_height = window_height;
     m_func_event_manager = func_event_manager;
 
-    // Initializing GLFW
     if (!glfwInit())
     {
         LOG_ERROR("Failed to initialize GLFW.");
         exit(EXIT_FAILURE);
     }
 
-    // Create OpenGL window and context
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -33,13 +31,12 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     glfwMakeContextCurrent(m_window);
 
-    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);          // Ensure we can capture the escape key being pressed
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);     // Hide the mouse and enable unlimited movement
-    glfwSetCursorPos(m_window, window_height / 2, window_width / 2); // Set the mouse at the center of the screen
-    glfwSwapInterval(1);                                             // Vsync (0 == off, 1 == on)
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_FALSE);
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetCursorPos(m_window, window_height / 2, window_width / 2);
+    glfwSwapInterval(1);// Vsync (0 == off, 1 == on)
     glfwPollEvents();
 
-    // Initialize glad
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     if (!status)
     {

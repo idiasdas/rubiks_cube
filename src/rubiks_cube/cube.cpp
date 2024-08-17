@@ -22,7 +22,7 @@ Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6
                 PieceCoordinates piece_coordinates = {(float)x, (float)y, (float)z};
                 set_piece_colors(piece_coordinates, piece_colors);
                 m_pieces.push_back(get_piece(piece_colors, glm::vec3({x * step, y * step, z * step})));
-                m_pieces_coordinates.push_back(piece_coordinates);
+                m_pieces_relative_coordinates.push_back(piece_coordinates);
             }
         }
     }
@@ -121,7 +121,7 @@ void Cube::cube_control(const int key, const int action)
     }
 }
 
-PieceCoordinates Cube::get_original_piece_coordinates(const int piece_index) const
+PieceCoordinates Cube::get_original_piece_relative_coordinates(const int piece_index) const
 {
     PieceCoordinates piece_coordinates;
     piece_coordinates.x = (float)(piece_index % 3) - 1;
@@ -188,7 +188,12 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
         face_str = "back";
     }
 
-    LOG_INFO("Intersection with piece {0}. Intersection point: ({1}, {2}, {3}). Intersection face: {4}", closest_piece_hit, intersec_point.x, intersec_point.y, intersec_point.z, face_str);
+    LOG_INFO("Intersection with piece {0}. Intersection point: ({1}, {2}, {3}). Intersection face: {4}",
+                closest_piece_hit,
+                intersec_point.x,
+                intersec_point.y,
+                intersec_point.z,
+                face_str);
 
     return intersec_face;
 }
@@ -200,8 +205,8 @@ void Cube::reset()
     {
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].set_rotation_matrix(glm::mat4(1));
-        auto [x, y, z] = get_original_piece_coordinates(i);
-        m_pieces_coordinates[i] = {x, y, z};
+        auto [x, y, z] = get_original_piece_relative_coordinates(i);
+        m_pieces_relative_coordinates[i] = {x, y, z};
         m_pieces[i].translate({x * step, y * step, z * step});
     }
 }
@@ -211,13 +216,13 @@ void Cube::on_update()
     run_animation();
 }
 
-void Cube::round_pieces_positions()
+void Cube::round_pieces_world_positions()
 {
     const float step = m_piece_size + m_gap_size;
     for (int i = 0; i < 27; i++)
     {
-        auto [x, y, z] = m_pieces_coordinates[i];
-        m_pieces_coordinates[i] = {std::round(x), std::round(y), std::round(z)};
+        auto [x, y, z] = m_pieces_relative_coordinates[i];
+        m_pieces_relative_coordinates[i] = {std::round(x), std::round(y), std::round(z)};
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].translate({std::round(x) * step, std::round(y) * step, std::round(z) * step});
     }
@@ -250,7 +255,7 @@ void Cube::resize(const float piece_size, const float gap_size)
     {
         m_pieces[i].set_translation_matrix(glm::mat4(1));
         m_pieces[i].set_scale_matrix(glm::mat4(1));
-        auto [x, y, z] = m_pieces_coordinates[i];
+        auto [x, y, z] = m_pieces_relative_coordinates[i];
         m_pieces[i].scale({m_piece_size / 2.f, m_piece_size / 2.f, m_piece_size / 2.f});
         m_pieces[i].translate({x * step, y * step, z * step});
     }
@@ -334,7 +339,7 @@ void Cube::rotate_face(const Face face_index, const float rotation_degrees)
 
     for (int i = 0; i < 27; i++)
     {
-        if (is_piece_on_face(m_pieces_coordinates[i], face_index))
+        if (is_piece_on_face(m_pieces_relative_coordinates[i], face_index))
         {
             // send piece to the origin
             m_pieces[i].set_translation_matrix(glm::mat4(1));
@@ -342,38 +347,37 @@ void Cube::rotate_face(const Face face_index, const float rotation_degrees)
             m_pieces[i].rotate(correct_rotation_degrees, face_axis * axis_sign);
 
             // update piece coordinates
-            glm::vec4 new_coordinates = {m_pieces_coordinates[i].x, m_pieces_coordinates[i].y, m_pieces_coordinates[i].z, 1};
+            glm::vec4 new_coordinates = {m_pieces_relative_coordinates[i].x, m_pieces_relative_coordinates[i].y, m_pieces_relative_coordinates[i].z, 1};
             new_coordinates = glm::rotate(glm::mat4(1), correct_rotation_degrees, face_axis * axis_sign) * new_coordinates;
-            m_pieces_coordinates[i] = {new_coordinates.x, new_coordinates.y, new_coordinates.z};
+            m_pieces_relative_coordinates[i] = {new_coordinates.x, new_coordinates.y, new_coordinates.z};
 
             // round piece coordinates on the face axis so that we can elimitate floating point errors and correctly identify the pieces on the face
             switch (face_index)
             {
             case Face::right:
-                m_pieces_coordinates[i].x = 1.f;
+                m_pieces_relative_coordinates[i].x = 1.f;
                 break;
             case Face::left:
-                m_pieces_coordinates[i].x = -1.f;
+                m_pieces_relative_coordinates[i].x = -1.f;
                 break;
             case Face::top:
-                m_pieces_coordinates[i].y = 1.f;
+                m_pieces_relative_coordinates[i].y = 1.f;
                 break;
             case Face::bottom:
-                m_pieces_coordinates[i].y = -1.f;
+                m_pieces_relative_coordinates[i].y = -1.f;
                 break;
             case Face::front:
-                m_pieces_coordinates[i].z = 1.f;
+                m_pieces_relative_coordinates[i].z = 1.f;
                 break;
             case Face::back:
-                m_pieces_coordinates[i].z = -1.f;
+                m_pieces_relative_coordinates[i].z = -1.f;
                 break;
 
             default:
                 break;
             }
 
-            // translate piece to its new position
-            m_pieces[i].translate({m_pieces_coordinates[i].x * step, m_pieces_coordinates[i].y * step, m_pieces_coordinates[i].z * step});
+            m_pieces[i].translate({m_pieces_relative_coordinates[i].x * step, m_pieces_relative_coordinates[i].y * step, m_pieces_relative_coordinates[i].z * step});
         }
     }
 }
@@ -413,7 +417,7 @@ void Cube::run_animation()
 
     if (total_angle >= PI / 2.f)
     {
-        round_pieces_positions();
+        round_pieces_world_positions();
         total_angle = 0.0f;
         m_moves.pop();
         s_state = CubeState::wait_input;

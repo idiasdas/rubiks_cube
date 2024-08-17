@@ -1,7 +1,3 @@
-/*
-    Testing external modules initialization.
-*/
-
 #include <assert.h>
 
 #include <glad/glad.h>
@@ -84,5 +80,4 @@ int main(int argc, char *argv[])
                                              model_mat, &intersection_dist);
 
     assert(inter_type == IntersectionType::undefined);
-
 }

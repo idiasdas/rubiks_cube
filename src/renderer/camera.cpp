@@ -73,13 +73,11 @@ void Camera::spherical_move(double horizontal_move, double vertical_move, double
                            m_radius * sin(m_vertical_angle),
                            m_radius * cos(m_vertical_angle) * cos(m_horizontal_angle));
 
-    // Right vector
     glm::vec3 right = glm::vec3(
         sin(m_horizontal_angle - PI / 2.0f),
         0,
         cos(m_horizontal_angle - PI / 2.0f));
 
-    // Up vector
     glm::vec3 up = glm::cross(right, glm::normalize(m_position));
 
     m_view_matrix = glm::lookAt(

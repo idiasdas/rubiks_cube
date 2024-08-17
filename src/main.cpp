@@ -89,7 +89,6 @@ int main()
             frames_count = 0;
         }
 
-        // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         cube.on_update();
@@ -97,15 +96,13 @@ int main()
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
         ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
 
-        // Swap buffers
         glfwSwapBuffers(context.get_window_handle());
         glfwPollEvents();
 
-    } // Check if the ESC key was pressed or the window was closed
+    }
     while (glfwGetKey(context.get_window_handle(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
            glfwWindowShouldClose(context.get_window_handle()) == 0);
 
-    // Close OpenGL window and terminate GLFW
     glfwTerminate();
 
     return 0;
