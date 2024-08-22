@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.17)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(project_target rubiks_cube)
+
 set(include_directories
     ext/glfw/include
     ext/glad/include
@@ -8,6 +11,7 @@ set(include_directories
     ext/spdlog/include
     src/
 )
+
 set(libraries
     glad
     glfw
