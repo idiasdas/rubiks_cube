@@ -1,18 +1,21 @@
 #include "shader.h"
 
-Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path) {
+Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path)
+{
 	uint32_t vertez_shader_ID = glCreateShader(GL_VERTEX_SHADER);
 	uint32_t fragment_shader_ID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	std::string vertex_shader_code;
 	std::ifstream vertex_shader_stream(EXECUTABLE_UTILS_PATH + vertex_file_path, std::ios::in);
-	if (vertex_shader_stream.is_open()) {
+	if (vertex_shader_stream.is_open())
+	{
 		std::stringstream sstr;
 		sstr << vertex_shader_stream.rdbuf();
 		vertex_shader_code = sstr.str();
 		vertex_shader_stream.close();
 	}
-	else {
+	else
+	{
 		LOG_ERROR("Impossible to open {0}.", EXECUTABLE_UTILS_PATH + vertex_file_path);
 		getchar();
 		exit(EXIT_FAILURE);
@@ -20,13 +23,15 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 
 	std::string fragment_shader_code;
 	std::ifstream fragment_shader_stream(EXECUTABLE_UTILS_PATH + fragment_file_path, std::ios::in);
-	if (fragment_shader_stream.is_open()) {
+	if (fragment_shader_stream.is_open())
+	{
 		std::stringstream sstr;
 		sstr << fragment_shader_stream.rdbuf();
 		fragment_shader_code = sstr.str();
 		fragment_shader_stream.close();
 	}
-	else {
+	else
+	{
 		LOG_ERROR("Impossible to open {0}.", EXECUTABLE_UTILS_PATH + fragment_file_path);
 		getchar();
 		exit(EXIT_FAILURE);
@@ -44,7 +49,8 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 	// Check Vertex Shader
 	glGetShaderiv(vertez_shader_ID, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(vertez_shader_ID, GL_INFO_LOG_LENGTH, &infor_log_length);
-	if (infor_log_length > 0) {
+	if (infor_log_length > 0)
+	{
 		std::vector<char> vertex_shader_error_msg(infor_log_length + 1);
 		glGetShaderInfoLog(vertez_shader_ID, infor_log_length, NULL, &vertex_shader_error_msg[0]);
 		printf("%s\n", &vertex_shader_error_msg[0]);
@@ -59,7 +65,8 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 	// Check Fragment Shader
 	glGetShaderiv(fragment_shader_ID, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(fragment_shader_ID, GL_INFO_LOG_LENGTH, &infor_log_length);
-	if (infor_log_length > 0) {
+	if (infor_log_length > 0)
+	{
 		std::vector<char> fragment_shader_error_msg(infor_log_length + 1);
 		glGetShaderInfoLog(fragment_shader_ID, infor_log_length, NULL, &fragment_shader_error_msg[0]);
 		LOG_ERROR("{0}", fragment_shader_error_msg.data());
@@ -75,7 +82,8 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 	// Check the program
 	glGetProgramiv(program_ID, GL_LINK_STATUS, &result);
 	glGetProgramiv(program_ID, GL_INFO_LOG_LENGTH, &infor_log_length);
-	if (infor_log_length > 0) {
+	if (infor_log_length > 0)
+	{
 		std::vector<char> ProgramErrorMessage(infor_log_length + 1);
 		glGetProgramInfoLog(program_ID, infor_log_length, NULL, &ProgramErrorMessage[0]);
 		LOG_ERROR("{0}", ProgramErrorMessage.data());
@@ -90,10 +98,12 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
 	m_renderer_ID = program_ID;
 }
 
-void Shader::bind() const {
+void Shader::bind() const
+{
 	glUseProgram(m_renderer_ID);
 }
 
-void Shader::unbind() const {
+void Shader::unbind() const
+{
 	glUseProgram(0);
 }

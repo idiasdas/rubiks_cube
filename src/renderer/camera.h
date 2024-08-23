@@ -10,12 +10,14 @@
 #include "opengl-context.h"
 #include "events.h"
 
-enum class CameraState {
+enum class CameraState
+{
     wait_input,
     move
 };
 
-class Camera {
+class Camera
+{
 private:
     OpenGLContext *m_OpenGL_context;
 
@@ -33,7 +35,7 @@ public:
     Camera(OpenGLContext *const openGL_context);
     glm::mat4 get_view_matrix() const { return m_view_matrix; }
     glm::mat4 get_projection_matrix() const { return m_projection_matrix; }
-    glm::vec3 get_camera_position() const { return m_position;}
-    void on_event(Event& event);
+    glm::vec3 get_camera_position() const { return m_position; }
+    void on_event(Event &event);
     void spherical_move(double theta_move, double phy_move, double radius_move);
 };
