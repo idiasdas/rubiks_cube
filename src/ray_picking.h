@@ -5,8 +5,7 @@
 #include "renderer/opengl-context.h"
 #include "renderer/camera.h"
 
-enum class IntersectionType : unsigned char
-{
+enum class IntersectionType : unsigned char {
     undefined,
     intersection,
     no_intersection

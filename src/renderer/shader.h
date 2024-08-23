@@ -18,8 +18,7 @@
 #define EXECUTABLE_UTILS_PATH ""
 #endif
 
-class Shader
-{
+class Shader {
 public:
     Shader(const std::string& vertex_file_path, const std::string& fragment_file_path);
     void bind() const;

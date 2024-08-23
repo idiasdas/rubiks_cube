@@ -16,8 +16,7 @@ Cube* g_cube = nullptr;
 Camera* g_camera = nullptr;
 Model* g_ray = nullptr;
 
-void event_manager(Event& event)
-{
+void event_manager(Event& event) {
     g_cube->on_event(event);
     g_camera->on_event(event);
 
@@ -37,8 +36,7 @@ void event_manager(Event& event)
     }
 }
 
-int main()
-{
+int main() {
     Log::init();
 
     OpenGLContext context("Rubik's Cube", 1280, 720, event_manager);

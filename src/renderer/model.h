@@ -8,8 +8,7 @@
 
 #include "shader.h"
 
-class Model
-{
+class Model {
 public:
     Model();
 

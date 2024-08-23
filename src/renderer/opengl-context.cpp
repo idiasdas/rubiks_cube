@@ -1,14 +1,12 @@
 #include "opengl-context.h"
 
-OpenGLContext::OpenGLContext(const std::string &window_name, const int window_width, const int window_height, void (*func_event_manager)(Event& event))
-{
+OpenGLContext::OpenGLContext(const std::string &window_name, const int window_width, const int window_height, void (*func_event_manager)(Event& event)) {
     m_window_name = window_name;
     m_window_width = window_width;
     m_window_height = window_height;
     m_func_event_manager = func_event_manager;
 
-    if (!glfwInit())
-    {
+    if (!glfwInit()) {
         LOG_ERROR("Failed to initialize GLFW.");
         exit(EXIT_FAILURE);
     }
@@ -21,8 +19,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
 
     m_window = glfwCreateWindow(m_window_width, m_window_height, m_window_name.c_str(), NULL, NULL);
 
-    if (m_window == nullptr)
-    {
+    if (m_window == nullptr) {
         LOG_ERROR("Failed to open GLFW window.");
         LOG_ERROR(" - If you have an Intel GPU, they are not 4.6 compatible.");
         glfwTerminate();
@@ -38,8 +35,7 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     glfwPollEvents();
 
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    if (!status)
-    {
+    if (!status) {
         std::cout << "Failed to initialize glad." << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -63,19 +59,16 @@ OpenGLContext::OpenGLContext(const std::string &window_name, const int window_wi
     set_events_callbacks();
 }
 
-void OpenGLContext::set_events_callbacks()
-{
+void OpenGLContext::set_events_callbacks() {
     glfwSetKeyCallback(m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods){
         (void) scancode;
         (void) mods;
         OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
-        if (action == GLFW_PRESS)
-        {
+        if (action == GLFW_PRESS) {
             KeyPressEvent event(key);
             context->run_event_manager(event);
         }
-        else if (action == GLFW_RELEASE)
-        {
+        else if (action == GLFW_RELEASE) {
             KeyReleaseEvent event(key);
             context->run_event_manager(event);
         }
@@ -90,15 +83,13 @@ void OpenGLContext::set_events_callbacks()
     glfwSetMouseButtonCallback(m_window, [](GLFWwindow *window, int button, int action, int mods){
         (void) mods;
         OpenGLContext* context = (OpenGLContext *) glfwGetWindowUserPointer(window);
-        if (action == GLFW_PRESS)
-        {
+        if (action == GLFW_PRESS) {
             double xpos, ypos;
             glfwGetCursorPos(window, &xpos, &ypos);
             MouseButtonPressEvent event(button, xpos, ypos);
             context->run_event_manager(event);
         }
-        else if (action == GLFW_RELEASE)
-        {
+        else if (action == GLFW_RELEASE) {
             MouseButtonReleaseEvent event(button);
             context->run_event_manager(event);
         }

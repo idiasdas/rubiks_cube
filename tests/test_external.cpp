@@ -4,8 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     assert(glfwInit() != 0);
 
     glfwWindowHint(GLFW_SAMPLES, 4);

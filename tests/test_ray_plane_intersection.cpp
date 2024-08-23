@@ -7,8 +7,7 @@
 #include "ray_picking.h"
 #include "rubiks_cube/cube.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     float intersection_dist = -100.0f;
     glm::vec3 ray_origin = glm::vec3({0.0f, 0.0f, 20.f});
     glm::vec3 ray_direction = glm::vec3({0.0f, 0.0f, -1.0f});

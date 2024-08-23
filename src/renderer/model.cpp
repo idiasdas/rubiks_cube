@@ -1,7 +1,6 @@
 #include "model.h"
 
-Model::Model()
-{
+Model::Model() {
     glGenVertexArrays(1, &m_vertex_array_ID);
     m_scale_matrix = glm::mat4(1);
     m_rotation_matrix = glm::mat4(1);
@@ -9,8 +8,7 @@ Model::Model()
     m_indices_count = 0;
 }
 
-void Model::buffer_vertices(const std::vector<float> buffer)
-{
+void Model::buffer_vertices(const std::vector<float> buffer) {
     glBindVertexArray(m_vertex_array_ID);
     glCreateBuffers(1, &m_vertex_buffer_ID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
@@ -44,8 +42,7 @@ void Model::buffer_vertices(const std::vector<float> buffer)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Model::update_buffer_vertices(const std::vector<float> buffer)
-{
+void Model::update_buffer_vertices(const std::vector<float> buffer) {
     glBindVertexArray(m_vertex_array_ID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
     glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(float), &buffer[0], GL_STATIC_DRAW);
@@ -53,8 +50,7 @@ void Model::update_buffer_vertices(const std::vector<float> buffer)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Model::buffer_indices(const std::vector<uint32_t> buffer)
-{
+void Model::buffer_indices(const std::vector<uint32_t> buffer) {
     m_indices_count = buffer.size();
 
     glBindVertexArray(m_vertex_array_ID);
@@ -66,8 +62,7 @@ void Model::buffer_indices(const std::vector<uint32_t> buffer)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::draw(const Shader &shader, const glm::mat4 MVP) const
-{
+void Model::draw(const Shader &shader, const glm::mat4 MVP) const {
     shader.bind();
     uint32_t matrix_ID = shader.get_uniform_location("MVP");
     glUniformMatrix4fv(matrix_ID, 1, GL_FALSE, &MVP[0][0]);
@@ -76,8 +71,7 @@ void Model::draw(const Shader &shader, const glm::mat4 MVP) const
     glBindVertexArray(0);
 }
 
-void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const
-{
+void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const {
     shader.bind();
     uint32_t matrix_ID = shader.get_uniform_location("MVP");
     glUniformMatrix4fv(matrix_ID, 1, GL_FALSE, &MVP[0][0]);
@@ -86,17 +80,14 @@ void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const
     glBindVertexArray(0);
 }
 
-void Model::scale(const glm::vec3& scale_vector)
-{
+void Model::scale(const glm::vec3& scale_vector) {
     m_scale_matrix = glm::scale(glm::mat4(1), scale_vector) * m_scale_matrix;
 }
 
-void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis)
-{
+void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis) {
     m_rotation_matrix = glm::rotate(glm::mat4(1), rotation_degree, rotation_axis) * m_rotation_matrix;
 }
 
-void Model::translate(const glm::vec3& translation_vector)
-{
+void Model::translate(const glm::vec3& translation_vector) {
     m_translation_matrix = glm::translate(glm::mat4(1), translation_vector) * m_translation_matrix;
 }

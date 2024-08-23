@@ -9,8 +9,7 @@
 #include "log.h"
 #include "events.h"
 
-class OpenGLContext
-{
+class OpenGLContext {
 public:
     OpenGLContext(const std::string &window_name, const int window_width, const int window_height, void (*func_event_manager)(Event &event));
 

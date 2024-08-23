@@ -10,14 +10,12 @@
 #include "opengl-context.h"
 #include "events.h"
 
-enum class CameraState
-{
+enum class CameraState {
     wait_input,
     move
 };
 
-class Camera
-{
+class Camera {
 private:
     OpenGLContext *m_OpenGL_context;
 
