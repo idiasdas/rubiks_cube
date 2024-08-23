@@ -41,8 +41,8 @@ struct Move
 class Cube
 {
 public:
-    Cube(const float piece_size, const float gap_size, const float (&colors)[6][3]);
-    void draw(const Shader &shader, const Camera &camera) const;
+    Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera & camera);
+    void draw(const Shader &shader) const;
     void rotate_face(const Face face_index, const float rotation_degrees);
     void reset();
     void on_update();
@@ -67,4 +67,5 @@ private:
     std::vector<PieceCoordinates> m_pieces_relative_coordinates;
     std::queue<Move> m_moves;
     float m_animation_speed;
+    Camera* m_camera;
 };

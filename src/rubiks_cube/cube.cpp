@@ -1,11 +1,12 @@
 #include "cube.h"
 
-Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6][3])
+Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera & camera)
 {
     m_piece_size = piece_size;
     m_gap_size = gap_size;
     m_moves = std::queue<Move>();
     m_animation_speed = 5.f;
+    m_camera = &camera;
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
@@ -322,10 +323,10 @@ Model Cube::get_piece(const float (&colors)[6][3], const glm::vec3 position)
     return piece;
 }
 
-void Cube::draw(const Shader &shader, const Camera &camera) const
+void Cube::draw(const Shader &shader) const
 {
     for (Model piece : m_pieces)
-        piece.draw(shader, camera.get_projection_matrix() * camera.get_view_matrix() * piece.get_model_matrix());
+        piece.draw(shader, m_camera->get_projection_matrix() * m_camera->get_view_matrix() * piece.get_model_matrix());
 }
 
 void Cube::rotate_face(const Face face_index, const float rotation_degrees)
