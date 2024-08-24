@@ -270,9 +270,9 @@ void Cube::on_event(Event &event)
             if (s_state == CubeState::rotate_face)
             {
                 float complete_angle = -s_cur_angle;
-                if (s_cur_angle > PI / 4.f && s_cur_angle <= PI / 2.f)
+                if (s_cur_angle > PI / 7.f && s_cur_angle <= PI / 2.f)
                     complete_angle = PI / 2.f - s_cur_angle;
-                if (s_cur_angle < -PI / 4.f && s_cur_angle > -PI / 2.f)
+                if (s_cur_angle < -PI / 7.f && s_cur_angle > -PI / 2.f)
                     complete_angle = -PI / 2.f - s_cur_angle;
                 m_moves.push({s_selected_face, complete_angle});
                 m_moves.push({s_selected_face, 0.0f});
