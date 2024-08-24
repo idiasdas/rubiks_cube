@@ -40,13 +40,13 @@ struct PieceCoordinates
 struct Move
 {
     Face face;
-    int direction; // 1 for clockwise, -1 for counterclockwise
+    float radians_clockwise;
 };
 
 class Cube
 {
 public:
-    Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera &camera);
+    Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera &camera, OpenGLContext& openGLContext);
     void draw(const Shader &shader) const;
     void rotate_face(const Face face_index, const float rotation_degrees);
     void reset();
@@ -63,6 +63,7 @@ private:
     void cube_control(const int key, const int action);
     void run_animation();
     PieceCoordinates get_original_piece_relative_coordinates(const int piece_index) const;
+    glm::vec4 get_face_center_world_coord(const Face face);
 
 private:
     float m_piece_size;
@@ -73,4 +74,5 @@ private:
     std::queue<Move> m_moves;
     float m_animation_speed;
     Camera *m_camera;
+    OpenGLContext* m_openGLContext;
 };

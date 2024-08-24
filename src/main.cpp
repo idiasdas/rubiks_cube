@@ -49,7 +49,7 @@ int main()
     Camera camera(&context);
     g_camera = &camera;
 
-    Cube cube(2.f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE}, camera);
+    Cube cube(2.f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE}, camera, context);
     g_cube = &cube;
 
     Model axes_lines;

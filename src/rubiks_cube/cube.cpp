@@ -1,12 +1,13 @@
 #include "cube.h"
 
-Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera & camera)
+Cube::Cube(const float piece_size, const float gap_size, const float (&colors)[6][3], Camera &camera, OpenGLContext &openGLContext)
 {
     m_piece_size = piece_size;
     m_gap_size = gap_size;
     m_moves = std::queue<Move>();
     m_animation_speed = 5.f;
     m_camera = &camera;
+    m_openGLContext = &openGLContext;
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 3; j++)
@@ -95,7 +96,7 @@ void Cube::cube_control(const int key, const int action)
     // R to reset cube to initial (solved) state
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
-        m_moves.push({Face::front, 0});
+        m_moves.push({Face::none, 0});
     }
     // Hold Left Shift to rotate face counterclockwise
     else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS)
@@ -113,9 +114,9 @@ void Cube::cube_control(const int key, const int action)
             if (key == keys[i] && action == GLFW_PRESS)
             {
                 if (clockwise)
-                    m_moves.push({faces[i], 1});
+                    m_moves.push({faces[i], PI / 2.f});
                 else
-                    m_moves.push({faces[i], -1});
+                    m_moves.push({faces[i], -PI / 2.f});
                 break;
             }
         }
@@ -158,43 +159,43 @@ Face Cube::ray_pick(glm::vec3 ray_origin, glm::vec3 ray_direction) const
 
     float cube_size = m_gap_size + 1.5f * m_piece_size;
 
-    if (intersec_point.x == cube_size)
+    if (std::abs(intersec_point.x - cube_size) < 100 * EPS)
     {
         intersec_face = Face::right;
         face_str = "right";
     }
-    else if (intersec_point.x == - cube_size)
+    else if (std::abs(intersec_point.x + cube_size) < 100 * EPS)
     {
         intersec_face = Face::left;
         face_str = "left";
     }
-    else if (intersec_point.y == cube_size)
+    else if (std::abs(intersec_point.y - cube_size) < 100 * EPS)
     {
         intersec_face = Face::top;
         face_str = "top";
     }
-    else if (intersec_point.y == - cube_size)
+    else if (std::abs(intersec_point.y + cube_size) < 100 * EPS)
     {
         intersec_face = Face::bottom;
         face_str = "bottom";
     }
-    else if (intersec_point.z == cube_size)
+    else if (std::abs(intersec_point.z - cube_size) < 100 * EPS)
     {
         intersec_face = Face::front;
         face_str = "front";
     }
-    else if (intersec_point.z == - cube_size)
+    else if (std::abs(intersec_point.z + cube_size) < 100 * EPS)
     {
         intersec_face = Face::back;
         face_str = "back";
     }
 
     LOG_INFO("Intersection with piece {0}. Intersection point: ({1}, {2}, {3}). Intersection face: {4}",
-                closest_piece_hit,
-                intersec_point.x,
-                intersec_point.y,
-                intersec_point.z,
-                face_str);
+             closest_piece_hit,
+             intersec_point.x,
+             intersec_point.y,
+             intersec_point.z,
+             face_str);
 
     return intersec_face;
 }
@@ -231,6 +232,13 @@ void Cube::round_pieces_world_positions()
 
 void Cube::on_event(Event &event)
 {
+    static CubeState s_state = CubeState::wait_input;
+    static Face s_selected_face = Face::none;
+    static float s_mouse_xpos = 0.0f;
+    static int s_mouse_ypos = 0.0f;
+    static float s_cur_angle = 0.0f;
+    static int s_move_dir = 1.f;
+
     if (event.get_event_type() == EventType::key_press)
     {
         cube_control(((KeyPressEvent *)&event)->get_key(), GLFW_PRESS);
@@ -239,11 +247,84 @@ void Cube::on_event(Event &event)
     {
         cube_control(((KeyReleaseEvent *)&event)->get_key(), GLFW_RELEASE);
     }
-    else if (event.get_event_type() == EventType::ray)
+    else if (event.get_event_type() == EventType::ray && s_state == CubeState::wait_input && m_moves.empty())
     {
         glm::vec3 origin = ((RayEvent *)&event)->get_origin();
         glm::vec3 direction = ((RayEvent *)&event)->get_direction();
-        ray_pick(origin, direction);
+        s_selected_face = ray_pick(origin, direction);
+        if (s_selected_face != Face::none)
+        {
+            s_state = CubeState::rotate_face;
+        }
+    }
+    else if (event.get_event_type() == EventType::mouse_button_press && s_state == CubeState::wait_input)
+    {
+        s_mouse_xpos = ((MouseButtonPressEvent *)&event)->get_xpos();
+        s_mouse_ypos = ((MouseButtonPressEvent *)&event)->get_ypos();
+        s_cur_angle = 0.0f;
+    }
+    else if (event.get_event_type() == EventType::mouse_button_release)
+    {
+        if (((MouseButtonReleaseEvent *)&event)->get_button() == GLFW_MOUSE_BUTTON_1)
+        {
+            if (s_cur_angle != 0.0f && s_state == CubeState::rotate_face)
+            {
+                float complete_angle = -s_cur_angle;
+                if (s_cur_angle > PI / 4.f && s_cur_angle <= PI / 2.f)
+                    complete_angle = PI / 2.f - s_cur_angle;
+                if (s_cur_angle < -PI / 4.f && s_cur_angle > -PI / 2.f)
+                    complete_angle = -PI / 2.f - s_cur_angle;
+                m_moves.push({s_selected_face, complete_angle});
+                m_moves.push({s_selected_face, 0.0f});
+                s_cur_angle = 0.f;
+                s_state = CubeState::wait_input;
+            }
+        }
+    }
+    else if (event.get_event_type() == EventType::mouse_move && s_state == CubeState::rotate_face)
+    {
+        if (s_state == CubeState::rotate_face)
+        {
+            glm::vec4 face_center_world_coords = get_face_center_world_coord(s_selected_face);
+
+            float xpos = ((MouseMoveEvent *)&event)->get_x();
+            float ypos = ((MouseMoveEvent *)&event)->get_y();
+
+            glm::vec4 mouse_screen_coord((xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
+                                         -(ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
+                                         -1.f,
+                                         1.0f);
+
+            glm::vec4 previous_mouse_screen_coord((s_mouse_xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
+                                                  -(s_mouse_ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
+                                                  -1.f,
+                                                  1.0f);
+
+            glm::vec4 face_center_screen_coord = m_camera->get_projection_matrix() * m_camera->get_view_matrix() * face_center_world_coords;
+            face_center_screen_coord = face_center_screen_coord / face_center_screen_coord.w;
+            glm::vec3 previous_vec = (previous_mouse_screen_coord - face_center_screen_coord);
+            glm::vec3 cur_vec = (mouse_screen_coord - face_center_screen_coord);
+
+            s_mouse_xpos = xpos;
+            s_mouse_ypos = ypos;
+
+            s_move_dir = (glm::cross(glm::normalize(previous_vec), glm::normalize(cur_vec)).z <= 0.0) ? 1 : -1;
+
+            float move_sensitivity = std::min((float)m_openGLContext->get_window_width(), (float)m_openGLContext->get_window_width());
+            move_sensitivity *= 4.f / 1280.f;
+            float move_radians_clockwise = std::min(glm::distance(previous_vec, cur_vec) * move_sensitivity, .2f);
+
+            LOG_INFO("Mouse move {0}, {1}, face center {2} {3}", cur_vec.x, cur_vec.y, face_center_screen_coord.x, face_center_screen_coord.y);
+
+            s_cur_angle += move_radians_clockwise * s_move_dir;
+
+            if (s_cur_angle >= PI / 2.f)
+                s_cur_angle -= PI / 2.f;
+            if (s_cur_angle <= -PI / 2.f)
+                s_cur_angle += PI / 2.f;
+
+            rotate_face(s_selected_face, move_radians_clockwise * s_move_dir);
+        }
     }
 }
 
@@ -268,47 +349,155 @@ Model Cube::get_piece(const float (&colors)[6][3], const glm::vec3 position)
 
     const std::vector<float> buffer = {
         // square facing x axis
-        VB, colors[0][0], colors[0][1], colors[0][2],
-        VD, colors[0][0], colors[0][1], colors[0][2],
-        VF, colors[0][0], colors[0][1], colors[0][2],
-        VF, colors[0][0], colors[0][1], colors[0][2],
-        VD, colors[0][0], colors[0][1], colors[0][2],
-        VH, colors[0][0], colors[0][1], colors[0][2],
+        VB,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
+        VD,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
+        VF,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
+        VF,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
+        VD,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
+        VH,
+        colors[0][0],
+        colors[0][1],
+        colors[0][2],
         // square facing y axis
-        VA, colors[1][0], colors[1][1], colors[1][2],
-        VB, colors[1][0], colors[1][1], colors[1][2],
-        VE, colors[1][0], colors[1][1], colors[1][2],
-        VE, colors[1][0], colors[1][1], colors[1][2],
-        VB, colors[1][0], colors[1][1], colors[1][2],
-        VF, colors[1][0], colors[1][1], colors[1][2],
+        VA,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
+        VB,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
+        VE,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
+        VE,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
+        VB,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
+        VF,
+        colors[1][0],
+        colors[1][1],
+        colors[1][2],
         // square facing z axis
-        VA, colors[2][0], colors[2][1], colors[2][2],
-        VC, colors[2][0], colors[2][1], colors[2][2],
-        VB, colors[2][0], colors[2][1], colors[2][2],
-        VB, colors[2][0], colors[2][1], colors[2][2],
-        VC, colors[2][0], colors[2][1], colors[2][2],
-        VD, colors[2][0], colors[2][1], colors[2][2],
+        VA,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
+        VC,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
+        VB,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
+        VB,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
+        VC,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
+        VD,
+        colors[2][0],
+        colors[2][1],
+        colors[2][2],
         // square facing - x axis
-        VA, colors[3][0], colors[3][1], colors[3][2],
-        VE, colors[3][0], colors[3][1], colors[3][2],
-        VC, colors[3][0], colors[3][1], colors[3][2],
-        VC, colors[3][0], colors[3][1], colors[3][2],
-        VE, colors[3][0], colors[3][1], colors[3][2],
-        VG, colors[3][0], colors[3][1], colors[3][2],
+        VA,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
+        VE,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
+        VC,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
+        VC,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
+        VE,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
+        VG,
+        colors[3][0],
+        colors[3][1],
+        colors[3][2],
         // square facing - y axis
-        VC, colors[4][0], colors[4][1], colors[4][2],
-        VG, colors[4][0], colors[4][1], colors[4][2],
-        VD, colors[4][0], colors[4][1], colors[4][2],
-        VD, colors[4][0], colors[4][1], colors[4][2],
-        VG, colors[4][0], colors[4][1], colors[4][2],
-        VH, colors[4][0], colors[4][1], colors[4][2],
+        VC,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
+        VG,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
+        VD,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
+        VD,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
+        VG,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
+        VH,
+        colors[4][0],
+        colors[4][1],
+        colors[4][2],
         // square facing - z axis
-        VE, colors[5][0], colors[5][1], colors[5][2],
-        VF, colors[5][0], colors[5][1], colors[5][2],
-        VG, colors[5][0], colors[5][1], colors[5][2],
-        VG, colors[5][0], colors[5][1], colors[5][2],
-        VF, colors[5][0], colors[5][1], colors[5][2],
-        VH, colors[5][0], colors[5][1], colors[5][2],
+        VE,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
+        VF,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
+        VG,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
+        VG,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
+        VF,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
+        VH,
+        colors[5][0],
+        colors[5][1],
+        colors[5][2],
     };
 
     std::vector<uint32_t> indices;
@@ -390,39 +579,86 @@ void Cube::run_animation()
     if (m_moves.empty())
         return;
 
-    static double last_time = glfwGetTime();
-    static double total_angle = 0.0f;
+    static double s_last_time = glfwGetTime();
+    static double s_total_angle = 0.0f;
+    static double s_final_angle = 0.0f;
+    static int direction = 0;
 
-    if (m_moves.front().direction == 0)
+    if (m_moves.front().face == Face::none)
     {
         reset();
         m_moves.pop();
         return;
     }
 
+    if (m_moves.front().radians_clockwise == 0.0f)
+    {
+        round_pieces_world_positions();
+        s_total_angle = 0.0f;
+        m_moves.pop();
+        s_state = CubeState::wait_input;
+        return;
+    }
+
     if (s_state == CubeState::wait_input)
     {
         s_state = CubeState::rotate_face;
-        last_time = glfwGetTime();
+        s_last_time = glfwGetTime();
+        s_final_angle = std::abs(m_moves.front().radians_clockwise);
+        direction = (m_moves.front().radians_clockwise >= 0) ? 1 : -1;
     }
 
     const double cur_time = glfwGetTime();
-    const double delta_time = cur_time - last_time;
+    const double delta_time = cur_time - s_last_time;
 
     if (delta_time < 1.f / 60.f)
         return;
 
-    const double cur_angle = std::min((PI / 2.f) * delta_time * m_animation_speed * m_moves.size(), PI / 2.f - total_angle);
-    total_angle += cur_angle;
-    rotate_face(m_moves.front().face, cur_angle * (float)m_moves.front().direction);
+    const double cur_angle = std::min(s_final_angle * delta_time * m_animation_speed * m_moves.size(), s_final_angle - s_total_angle);
+    s_total_angle += cur_angle;
+    rotate_face(m_moves.front().face, cur_angle * (float)direction);
 
-    if (total_angle >= PI / 2.f)
+    if (s_total_angle >= s_final_angle)
     {
         round_pieces_world_positions();
-        total_angle = 0.0f;
+        s_total_angle = 0.0f;
         m_moves.pop();
         s_state = CubeState::wait_input;
     }
 
-    last_time = cur_time;
+    s_last_time = cur_time;
+}
+
+glm::vec4 Cube::get_face_center_world_coord(const Face face)
+{
+    int piece_index = -1;
+    switch (face)
+    {
+    case Face::front:
+        piece_index = 22;
+        break;
+    case Face::right:
+        piece_index = 14;
+        break;
+    case Face::top:
+        piece_index = 16;
+        break;
+    case Face::back:
+        piece_index = 4;
+        break;
+    case Face::left:
+        piece_index = 12;
+        break;
+    case Face::bottom:
+        piece_index = 10;
+        break;
+    default:
+        piece_index = -1;
+    }
+
+    if (piece_index == -1)
+        return glm::vec4(0);
+
+    float step = m_piece_size + m_gap_size;
+    return m_pieces[piece_index].get_model_matrix() * glm::vec4(m_pieces_relative_coordinates[piece_index].x * step, m_pieces_relative_coordinates[piece_index].y * step, m_pieces_relative_coordinates[piece_index].z * step ,  1.0f);
 }
