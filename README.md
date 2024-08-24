@@ -82,8 +82,8 @@ The following are the commands you can use:
 |Keys|Action|
 |-|-|
 |Esc| Close program|
-|Mouse 1| Cast ray (DEBUG Feature)|
-|Mouse 2| While pressed, move the mouse to move the cube |
+|Mouse 1| Click and drag to select and rotate a face|
+|Mouse 2| Click and drag to move the camera|
 |Mouse Scroll| Control zoom|
 |NumPad 2| Rotate bottom face clockwise|
 |NumPad 8| Rotate top face clockwise|
@@ -108,14 +108,18 @@ The following are the commands you can use:
 - [x] Varying move animation speed
 - [ ] GIF generator
 - [ ] Solver
-- [ ] Rotate faces with the mouse
+- [x] Rotate faces with the mouse
     - [x] Ray cast
     - [x] Ray picking (RAY OBB intersection)
-    - [ ] Face rotation with mouse vector
-    - [ ] Rotation rounding
+    - [x] Face rotation with mouse vector
+    - [x] Rotation rounding
 
 # Updates
 
 ### 31/07
 
 - New camera: Before, the camera was free so you could fly around. Now, it is always looking at the cube's center. It moves on the sphere centered at the cube. Hold `Mouse 2` and move the mouse to move the camera. Use the `Mouse Scroll` to control the distance between the camera and the cube.
+
+### 24/07
+
+- Mouse control: Select a face with `mouse 1` and drag it to rotate. Incomplete rotations are automatically completed.
