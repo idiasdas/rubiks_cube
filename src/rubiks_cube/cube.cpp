@@ -267,7 +267,7 @@ void Cube::on_event(Event &event)
     {
         if (((MouseButtonReleaseEvent *)&event)->get_button() == GLFW_MOUSE_BUTTON_1)
         {
-            if (s_cur_angle != 0.0f && s_state == CubeState::rotate_face)
+            if (s_state == CubeState::rotate_face)
             {
                 float complete_angle = -s_cur_angle;
                 if (s_cur_angle > PI / 4.f && s_cur_angle <= PI / 2.f)
@@ -313,8 +313,6 @@ void Cube::on_event(Event &event)
             float move_sensitivity = std::min((float)m_openGLContext->get_window_width(), (float)m_openGLContext->get_window_width());
             move_sensitivity *= 4.f / 1280.f;
             float move_radians_clockwise = std::min(glm::distance(previous_vec, cur_vec) * move_sensitivity, .2f);
-
-            LOG_INFO("Mouse move {0}, {1}, face center {2} {3}", cur_vec.x, cur_vec.y, face_center_screen_coord.x, face_center_screen_coord.y);
 
             s_cur_angle += move_radians_clockwise * s_move_dir;
 
