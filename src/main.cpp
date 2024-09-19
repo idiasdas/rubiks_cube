@@ -10,27 +10,25 @@
 #include "renderer/shader.h"
 #include "rubiks_cube/cube.h"
 
-OpenGLContext *g_context = nullptr;
-Cube *g_cube = nullptr;
-Camera *g_camera = nullptr;
-Model *g_ray = nullptr;
+OpenGLContext* g_context = nullptr;
+Cube* g_cube = nullptr;
+Camera* g_camera = nullptr;
+Model* g_ray = nullptr;
 
-void event_manager(Event &event)
+void event_manager(Event& event)
 {
     g_cube->on_event(event);
     g_camera->on_event(event);
 
-    if (event.get_event_type() == EventType::mouse_button_press)
-    {
-        if (((MouseButtonPressEvent *)&event)->get_button() == GLFW_MOUSE_BUTTON_1)
-        {
-            float xpos = ((MouseButtonPressEvent *)&event)->get_xpos();
-            float ypos = ((MouseButtonPressEvent *)&event)->get_ypos();
+    if (event.get_event_type() == EventType::mouse_button_press) {
+        if (((MouseButtonPressEvent*)&event)->get_button() == GLFW_MOUSE_BUTTON_1) {
+            float xpos = ((MouseButtonPressEvent*)&event)->get_xpos();
+            float ypos = ((MouseButtonPressEvent*)&event)->get_ypos();
             glm::vec3 ray_origin, ray_direction;
             create_ray_from_screen(xpos, ypos, g_context, g_camera, ray_origin, ray_direction);
 
-            g_ray->update_buffer_vertices({ray_origin.x, ray_origin.y, ray_origin.z, 0.8f, 0.8f, 0.2f,
-                                           500.f * ray_direction.x + ray_origin.x, 500.f * ray_direction.y + ray_origin.y, 500.f * ray_direction.z + ray_origin.z, 0.8f, 0.8f, 0.2f});
+            g_ray->update_buffer_vertices({ ray_origin.x, ray_origin.y, ray_origin.z, 0.8f, 0.8f, 0.2f,
+                500.f * ray_direction.x + ray_origin.x, 500.f * ray_direction.y + ray_origin.y, 500.f * ray_direction.z + ray_origin.z, 0.8f, 0.8f, 0.2f });
 
             RayEvent ray_event(ray_origin, ray_direction);
             event_manager(ray_event);
@@ -48,7 +46,7 @@ int main()
     Camera camera(&context);
     g_camera = &camera;
 
-    Cube cube(2.f, 1.f, {BLUE, WHITE, RED, GREEN, YELLOW, ORANGE}, camera, context);
+    Cube cube(2.f, 1.f, { BLUE, WHITE, RED, GREEN, YELLOW, ORANGE }, camera, context);
     g_cube = &cube;
 
     Model axes_lines;
@@ -58,16 +56,17 @@ int main()
         0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 10.0f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.0f};
+        0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.0f
+    };
 
     axes_lines.buffer_vertices(buffer_lines);
 
-    axes_lines.buffer_indices({0, 1, 2, 3, 4, 5});
+    axes_lines.buffer_indices({ 0, 1, 2, 3, 4, 5 });
 
     Model ray;
-    ray.buffer_vertices({0.0f, 0.0f, 0.0f, .8f, 0.8f, 0.2f,
-                         10.0f, 10.0f, 0.0f, .8f, 0.8f, 0.2f});
-    ray.buffer_indices({0, 1});
+    ray.buffer_vertices({ 0.0f, 0.0f, 0.0f, .8f, 0.8f, 0.2f,
+        10.0f, 10.0f, 0.0f, .8f, 0.8f, 0.2f });
+    ray.buffer_indices({ 0, 1 });
 
     g_ray = &ray;
 
@@ -75,14 +74,12 @@ int main()
     double last_time = glfwGetTime();
     int frames_count = 0;
 
-    do
-    {
+    do {
         frames_count++;
         double cur_time = glfwGetTime();
         double delta = cur_time - last_time;
 
-        if (delta > 1.0f)
-        {
+        if (delta > 1.0f) {
             LOG_INFO("FPS: {0}", frames_count / delta);
             last_time = cur_time;
             frames_count = 0;

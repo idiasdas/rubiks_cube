@@ -19,12 +19,12 @@ void Model::buffer_vertices(const std::vector<float> buffer)
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, m_vertex_buffer_ID);
     glVertexAttribPointer(
-        0,                 // attribute 0. No particular reason for 0, but must match the layout in the shader.
-        3,                 // size
-        GL_FLOAT,          // type
-        GL_FALSE,          // normalized?
+        0, // attribute 0. No particular reason for 0, but must match the layout in the shader.
+        3, // size
+        GL_FLOAT, // type
+        GL_FALSE, // normalized?
         6 * sizeof(float), // stride
-        (void *)0          // array buffer offset
+        (void*)0 // array buffer offset
     );
 
     glEnableVertexAttribArray(1);
@@ -35,7 +35,7 @@ void Model::buffer_vertices(const std::vector<float> buffer)
         GL_FLOAT,
         GL_FALSE,
         6 * sizeof(float),
-        (void *)(3 * sizeof(float)));
+        (void*)(3 * sizeof(float)));
 
     glBindVertexArray(0);
     glDisableVertexAttribArray(0);
@@ -65,7 +65,7 @@ void Model::buffer_indices(const std::vector<uint32_t> buffer)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::draw(const Shader &shader, const glm::mat4 MVP) const
+void Model::draw(const Shader& shader, const glm::mat4 MVP) const
 {
     shader.bind();
     uint32_t matrix_ID = shader.get_uniform_location("MVP");
@@ -75,7 +75,7 @@ void Model::draw(const Shader &shader, const glm::mat4 MVP) const
     glBindVertexArray(0);
 }
 
-void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const
+void Model::draw_lines(const Shader& shader, const glm::mat4 MVP) const
 {
     shader.bind();
     uint32_t matrix_ID = shader.get_uniform_location("MVP");
@@ -85,17 +85,17 @@ void Model::draw_lines(const Shader &shader, const glm::mat4 MVP) const
     glBindVertexArray(0);
 }
 
-void Model::scale(const glm::vec3 &scale_vector)
+void Model::scale(const glm::vec3& scale_vector)
 {
     m_scale_matrix = glm::scale(glm::mat4(1), scale_vector) * m_scale_matrix;
 }
 
-void Model::rotate(const float rotation_degree, const glm::vec3 &rotation_axis)
+void Model::rotate(const float rotation_degree, const glm::vec3& rotation_axis)
 {
     m_rotation_matrix = glm::rotate(glm::mat4(1), rotation_degree, rotation_axis) * m_rotation_matrix;
 }
 
-void Model::translate(const glm::vec3 &translation_vector)
+void Model::translate(const glm::vec3& translation_vector)
 {
     m_translation_matrix = glm::translate(glm::mat4(1), translation_vector) * m_translation_matrix;
 }
