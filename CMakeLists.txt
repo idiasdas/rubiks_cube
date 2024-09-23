@@ -9,6 +9,7 @@ set(include_directories
     ext/glad/include
     ext/glm
     ext/spdlog/include
+    ext/imgui
     src/
 )
 
@@ -17,6 +18,7 @@ set(libraries
     glfw
     glm::glm
     spdlog::spdlog
+    imgui
 )
 
 project(${project_target})

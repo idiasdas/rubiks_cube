@@ -9,6 +9,7 @@
 #include "renderer/opengl-context.h"
 #include "renderer/shader.h"
 #include "rubiks_cube/cube.h"
+#include <imgui.h>
 
 OpenGLContext* g_context = nullptr;
 Cube* g_cube = nullptr;
@@ -42,6 +43,9 @@ int main()
 
     OpenGLContext context("Rubik's Cube", 1280, 720, event_manager);
     g_context = &context;
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
 
     Camera camera(&context);
     g_camera = &camera;

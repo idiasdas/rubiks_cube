@@ -19,3 +19,6 @@ add_subdirectory(glm)
 
 # Add spdlog
 add_subdirectory(spdlog)
+
+# Add imgui
+add_subdirectory(imgui)
