@@ -2,6 +2,11 @@
 
 #include "rubiks_cube.h"
 
+#include <glad/glad.h>
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#include "backends/imgui_impl_glfw.cpp"
+#include "backends/imgui_impl_opengl3.cpp"
+
 #include "events.h"
 #include "log.h"
 #include "renderer/camera.h"
@@ -9,7 +14,6 @@
 #include "renderer/opengl-context.h"
 #include "renderer/shader.h"
 #include "rubiks_cube/cube.h"
-#include <imgui.h>
 
 OpenGLContext* g_context = nullptr;
 Cube* g_cube = nullptr;
@@ -46,6 +50,16 @@ int main()
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
+
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(context.get_window_handle(), true);
+    ImGui_ImplOpenGL3_Init("#version 430");
 
     Camera camera(&context);
     g_camera = &camera;
@@ -79,6 +93,7 @@ int main()
     int frames_count = 0;
 
     do {
+
         frames_count++;
         double cur_time = glfwGetTime();
         double delta = cur_time - last_time;
@@ -91,10 +106,45 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+        ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
+
+        static int counter = 0;
+        if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::End();
+        ImGuiIO& io = ImGui::GetIO();
+        io.DisplaySize = ImVec2(context.get_window_width(), context.get_window_height());
+
+
+        // int display_w, display_h;
+        // glfwGetFramebufferSize(context.get_window_handle(), &display_w, &display_h);
+        // glViewport(0, 0, display_w, display_h);
+        glViewport(0, 0, context.get_window_width(), context.get_window_height());
+
         cube.on_update();
         cube.draw(color_shader);
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
         ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
+
+        // Rendering
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
 
         glfwSwapBuffers(context.get_window_handle());
         glfwPollEvents();
