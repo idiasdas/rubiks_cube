@@ -10,7 +10,7 @@ set(include_directories
     ext/glm
     ext/spdlog/include
     ext/imgui
-    src/
+    src
 )
 
 set(libraries
@@ -43,10 +43,9 @@ target_compile_definitions(rubiks_cube PRIVATE EXECUTABLE_UTILS_PATH="${relative
 
 target_include_directories(rubiks_cube PUBLIC ${include_directories})
 
-target_link_libraries(rubiks_cube PRIVATE ${libraries})
+target_link_libraries(rubiks_cube PUBLIC ${libraries})
 
 # Adding tests
-
 enable_testing()
 list(REMOVE_ITEM executable_sources "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
 
