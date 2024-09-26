@@ -41,6 +41,27 @@ void event_manager(Event& event)
     }
 }
 
+void set_imgui_window(ImGuiIO& io, OpenGLContext& context)
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
+    ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
+
+    static int counter = 0;
+    if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
+        counter++;
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    ImGui::End();
+    io.DisplaySize = ImVec2(context.get_window_width(), context.get_window_height());
+
+    glViewport(0, 0, context.get_window_width(), context.get_window_height());
+}
+
 int main()
 {
     Log::init();
@@ -105,41 +126,16 @@ int main()
         }
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
-        ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
-
-        static int counter = 0;
-        if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::End();
-        ImGuiIO& io = ImGui::GetIO();
-        io.DisplaySize = ImVec2(context.get_window_width(), context.get_window_height());
-
-
-        // int display_w, display_h;
-        // glfwGetFramebufferSize(context.get_window_handle(), &display_w, &display_h);
-        // glViewport(0, 0, display_w, display_h);
-        glViewport(0, 0, context.get_window_width(), context.get_window_height());
-
+        set_imgui_window(io, context);
         cube.on_update();
         cube.draw(color_shader);
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
         ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
 
-        // Rendering
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
