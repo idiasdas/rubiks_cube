@@ -198,6 +198,8 @@ void set_imgui_window(ImGuiIO& io, OpenGLContext& context)
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuiDockNodeFlags dockspace_flags =  0 | ImGuiDockNodeFlags_PassthruCentralNode;
+    ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), dockspace_flags);
     ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
     ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
 
@@ -280,8 +282,10 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         set_imgui_window(io, context);
         bool show_demo_window = true;
+        bool show_log_window = true;
         // ImGui::ShowDemoWindow(&show_demo_window);
-        ShowExampleAppLog(&show_demo_window);
+        ShowExampleAppLog(&show_log_window);
+
         cube.on_update();
         cube.draw(color_shader);
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
