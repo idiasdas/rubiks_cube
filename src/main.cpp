@@ -281,9 +281,7 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         set_imgui_window(io, context);
-        bool show_demo_window = true;
         bool show_log_window = true;
-        // ImGui::ShowDemoWindow(&show_demo_window);
         ShowExampleAppLog(&show_log_window);
 
         cube.on_update();
