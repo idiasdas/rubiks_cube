@@ -72,6 +72,7 @@ This project uses:
 - glfw
 - glm
 - spdlog
+- imgui
 
 You can find all external software in **ext/**.
 
