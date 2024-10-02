@@ -22,6 +22,9 @@ Model* g_ray = nullptr;
 
 void event_manager(Event& event)
 {
+    if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard)
+        return;
+
     g_cube->on_event(event);
     g_camera->on_event(event);
 
