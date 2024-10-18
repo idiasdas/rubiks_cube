@@ -130,7 +130,7 @@ int main()
         glfwSwapBuffers(context.get_window_handle());
         glfwPollEvents();
 
-    } while (glfwGetKey(context.get_window_handle(), GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(context.get_window_handle()) == 0);
+    } while (glfwGetKey(context.get_window_handle(), GLFW_KEY_Q) != GLFW_PRESS && glfwWindowShouldClose(context.get_window_handle()) == 0);
 
     glfwTerminate();
 

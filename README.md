@@ -82,7 +82,7 @@ The following are the commands you can use:
 
 |Keys|Action|
 |-|-|
-|Esc| Close program|
+|Q| Close program|
 |Mouse 1| Click and drag to select and rotate a face|
 |Mouse 2| Click and drag to move the camera|
 |Mouse Scroll| Control zoom|
