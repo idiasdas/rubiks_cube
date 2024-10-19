@@ -5,8 +5,6 @@
 #include <sstream>
 #include <string>
 
-#include "glm/glm.hpp"
-
 enum class EventType {
     none = 0,
     window_close,
