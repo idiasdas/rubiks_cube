@@ -86,13 +86,13 @@ The following are the commands you can use:
 |Mouse 1| Click and drag to select and rotate a face|
 |Mouse 2| Click and drag to move the camera|
 |Mouse Scroll| Control zoom|
-|NumPad 2| Rotate bottom face clockwise|
-|NumPad 8| Rotate top face clockwise|
-|NumPad 4| Rotate left face clockwise|
-|NumPad 6| Rotate right face clockwise|
-|NumPad 5| Rotate front face clockwise|
-|NumPad 0| Rotate back face clockwise|
-|Left Shift + NumPad 0, 2, 4, 5, 6, 8 | Rotate face counterclockwise|
+|2| Rotate bottom face clockwise|
+|8| Rotate top face clockwise|
+|4| Rotate left face clockwise|
+|6| Rotate right face clockwise|
+|5| Rotate front face clockwise|
+|0| Rotate back face clockwise|
+|Left Shift + 0, 2, 4, 5, 6, 8 | Rotate face counterclockwise|
 |R| Reset cube to initial state|
 
 # Goals

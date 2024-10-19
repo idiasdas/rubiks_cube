@@ -99,12 +99,13 @@ void Cube::cube_control(const int key, const int action)
     else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE)
         clockwise = true;
     else {
-        int keys[] = { GLFW_KEY_KP_8, GLFW_KEY_KP_2, GLFW_KEY_KP_4, GLFW_KEY_KP_6, GLFW_KEY_KP_0, GLFW_KEY_KP_5 };
+        int numpad_keys[] = { GLFW_KEY_KP_8, GLFW_KEY_KP_2, GLFW_KEY_KP_4, GLFW_KEY_KP_6, GLFW_KEY_KP_0, GLFW_KEY_KP_5 };
+        int num_keys[] = { GLFW_KEY_8, GLFW_KEY_2, GLFW_KEY_4, GLFW_KEY_6, GLFW_KEY_0, GLFW_KEY_5 };
         Face faces[] = { Face::top, Face::bottom, Face::left, Face::right, Face::back, Face::front };
 
         for (int i = 0; i < 6; i++) {
             // Rotate face with number keys
-            if (key == keys[i] && action == GLFW_PRESS) {
+            if ((key == numpad_keys[i] || key == num_keys[i]) && action == GLFW_PRESS) {
                 if (clockwise)
                     m_moves.push({ faces[i], PI / 2.f });
                 else
