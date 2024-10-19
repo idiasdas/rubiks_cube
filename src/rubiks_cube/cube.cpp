@@ -247,45 +247,43 @@ void Cube::on_event(Event& event)
             }
         }
     } else if (event.get_event_type() == EventType::mouse_move && s_state == CubeState::rotate_face) {
-        if (s_state == CubeState::rotate_face) {
-            glm::vec4 face_center_world_coords = get_face_center_world_coord(s_selected_face);
+        glm::vec4 face_center_world_coords = get_face_center_world_coord(s_selected_face);
 
-            float xpos = ((MouseMoveEvent*)&event)->get_x();
-            float ypos = ((MouseMoveEvent*)&event)->get_y();
+        float xpos = ((MouseMoveEvent*)&event)->get_x();
+        float ypos = ((MouseMoveEvent*)&event)->get_y();
 
-            glm::vec4 mouse_screen_coord((xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
-                -(ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
-                -1.f,
-                1.0f);
+        glm::vec4 mouse_screen_coord((xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
+            -(ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
+            -1.f,
+            1.0f);
 
-            glm::vec4 previous_mouse_screen_coord((s_mouse_xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
-                -(s_mouse_ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
-                -1.f,
-                1.0f);
+        glm::vec4 previous_mouse_screen_coord((s_mouse_xpos / (float)m_openGLContext->get_window_width() - 0.5f) * 2.0f,
+            -(s_mouse_ypos / (float)m_openGLContext->get_window_height() - 0.5f) * 2.0f,
+            -1.f,
+            1.0f);
 
-            glm::vec4 face_center_screen_coord = m_camera->get_projection_matrix() * m_camera->get_view_matrix() * face_center_world_coords;
-            face_center_screen_coord = face_center_screen_coord / face_center_screen_coord.w;
-            glm::vec3 previous_vec = (previous_mouse_screen_coord - face_center_screen_coord);
-            glm::vec3 cur_vec = (mouse_screen_coord - face_center_screen_coord);
+        glm::vec4 face_center_screen_coord = m_camera->get_projection_matrix() * m_camera->get_view_matrix() * face_center_world_coords;
+        face_center_screen_coord = face_center_screen_coord / face_center_screen_coord.w;
+        glm::vec3 previous_vec = (previous_mouse_screen_coord - face_center_screen_coord);
+        glm::vec3 cur_vec = (mouse_screen_coord - face_center_screen_coord);
 
-            s_mouse_xpos = xpos;
-            s_mouse_ypos = ypos;
+        s_mouse_xpos = xpos;
+        s_mouse_ypos = ypos;
 
-            s_move_dir = (glm::cross(glm::normalize(previous_vec), glm::normalize(cur_vec)).z <= 0.0) ? 1 : -1;
+        s_move_dir = (glm::cross(glm::normalize(previous_vec), glm::normalize(cur_vec)).z <= 0.0) ? 1 : -1;
 
-            float move_sensitivity = std::min((float)m_openGLContext->get_window_width(), (float)m_openGLContext->get_window_width());
-            move_sensitivity *= 4.f / 1280.f;
-            float move_radians_clockwise = std::min(glm::distance(previous_vec, cur_vec) * move_sensitivity, .2f);
+        float move_sensitivity = std::min((float)m_openGLContext->get_window_width(), (float)m_openGLContext->get_window_width());
+        move_sensitivity *= 4.f / 1280.f;
+        float move_radians_clockwise = std::min(glm::distance(previous_vec, cur_vec) * move_sensitivity, .2f);
 
-            s_cur_angle += move_radians_clockwise * s_move_dir;
+        s_cur_angle += move_radians_clockwise * s_move_dir;
 
-            if (s_cur_angle >= PI / 2.f)
-                s_cur_angle -= PI / 2.f;
-            if (s_cur_angle <= -PI / 2.f)
-                s_cur_angle += PI / 2.f;
+        if (s_cur_angle >= PI / 2.f)
+            s_cur_angle -= PI / 2.f;
+        if (s_cur_angle <= -PI / 2.f)
+            s_cur_angle += PI / 2.f;
 
-            rotate_face(s_selected_face, move_radians_clockwise * s_move_dir);
-        }
+        rotate_face(s_selected_face, move_radians_clockwise * s_move_dir);
     }
 }
 
