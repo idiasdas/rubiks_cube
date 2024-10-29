@@ -63,6 +63,7 @@ int main()
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(context.get_window_handle(), true);
     ImGui_ImplOpenGL3_Init("#version 430");
+    ImguiWindow imgui_window;
 
     Camera camera(&context);
     g_camera = &camera;
@@ -110,12 +111,13 @@ int main()
         }
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        set_imgui_window(io, context);
-        ShowExampleAppLog(&show_log_window);
+        imgui_window.SetWindow( io, context);
+        imgui_window.Draw(&show_log_window);
 
         cube.on_update();
         cube.draw(color_shader);
         axes_lines.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * axes_lines.get_model_matrix());
+        ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
         ray.draw_lines(color_shader, camera.get_projection_matrix() * camera.get_view_matrix() * ray.get_model_matrix());
 
         ImGui::Render();
