@@ -88,6 +88,9 @@ bool Cube::is_piece_on_face(const PieceCoordinates& piece_coordinates, const Fac
 void Cube::cube_control(const int key, const int action)
 {
     static bool clockwise = true;
+    
+    if (m_state == CubeState::mouse_rotation)
+        return;
 
     // R to reset cube to initial (solved) state
     if (key == GLFW_KEY_R && action == GLFW_PRESS) {
@@ -190,6 +193,7 @@ void Cube::reset()
         m_pieces_relative_coordinates[i] = { x, y, z };
         m_pieces[i].translate({ x * step, y * step, z * step });
     }
+    m_state = CubeState::wait_input;
 }
 
 void Cube::on_update()
@@ -210,7 +214,6 @@ void Cube::round_pieces_world_positions()
 
 void Cube::on_event(Event& event)
 {
-    static CubeState s_state = CubeState::wait_input;
     static Face s_selected_face = Face::none;
     static float s_mouse_xpos = 0.0f;
     static int s_mouse_ypos = 0.0f;
@@ -221,20 +224,20 @@ void Cube::on_event(Event& event)
         cube_control(((KeyPressEvent*)&event)->get_key(), GLFW_PRESS);
     } else if (event.get_event_type() == EventType::key_release) {
         cube_control(((KeyReleaseEvent*)&event)->get_key(), GLFW_RELEASE);
-    } else if (event.get_event_type() == EventType::ray && s_state == CubeState::wait_input && m_moves.empty()) {
+    } else if (event.get_event_type() == EventType::ray && m_state == CubeState::wait_input && m_moves.empty()) {
         glm::vec3 origin = ((RayEvent*)&event)->get_origin();
         glm::vec3 direction = ((RayEvent*)&event)->get_direction();
         s_selected_face = ray_pick(origin, direction);
         if (s_selected_face != Face::none) {
-            s_state = CubeState::rotate_face;
+            m_state = CubeState::mouse_rotation;
         }
-    } else if (event.get_event_type() == EventType::mouse_button_press && s_state == CubeState::wait_input) {
+    } else if (event.get_event_type() == EventType::mouse_button_press && m_state == CubeState::wait_input) {
         s_mouse_xpos = ((MouseButtonPressEvent*)&event)->get_xpos();
         s_mouse_ypos = ((MouseButtonPressEvent*)&event)->get_ypos();
         s_cur_angle = 0.0f;
     } else if (event.get_event_type() == EventType::mouse_button_release) {
         if (((MouseButtonReleaseEvent*)&event)->get_button() == GLFW_MOUSE_BUTTON_1) {
-            if (s_state == CubeState::rotate_face) {
+            if (m_state == CubeState::mouse_rotation) {
                 float complete_angle = -s_cur_angle;
                 if (s_cur_angle > PI / 7.f && s_cur_angle <= PI / 2.f)
                     complete_angle = PI / 2.f - s_cur_angle;
@@ -243,10 +246,10 @@ void Cube::on_event(Event& event)
                 m_moves.push({ s_selected_face, complete_angle });
                 m_moves.push({ s_selected_face, 0.0f });
                 s_cur_angle = 0.f;
-                s_state = CubeState::wait_input;
+                m_state = CubeState::wait_input;
             }
         }
-    } else if (event.get_event_type() == EventType::mouse_move && s_state == CubeState::rotate_face) {
+    } else if (event.get_event_type() == EventType::mouse_move && m_state == CubeState::mouse_rotation) {
         glm::vec4 face_center_world_coords = get_face_center_world_coord(s_selected_face);
 
         float xpos = ((MouseMoveEvent*)&event)->get_x();
@@ -529,9 +532,9 @@ void Cube::rotate_face(const Face face_index, const float rotation_degrees)
 
 void Cube::run_animation()
 {
-    static CubeState s_state = CubeState::wait_input;
-
     if (m_moves.empty())
+        return;
+    if (m_state == CubeState::mouse_rotation)
         return;
 
     static double s_last_time = glfwGetTime();
@@ -549,12 +552,12 @@ void Cube::run_animation()
         round_pieces_world_positions();
         s_total_angle = 0.0f;
         m_moves.pop();
-        s_state = CubeState::wait_input;
+        m_state = CubeState::wait_input;
         return;
     }
 
-    if (s_state == CubeState::wait_input) {
-        s_state = CubeState::rotate_face;
+    if (m_state == CubeState::wait_input) {
+        m_state = CubeState::key_rotation;
         s_last_time = glfwGetTime();
         s_final_angle = std::abs(m_moves.front().radians_clockwise);
         direction = (m_moves.front().radians_clockwise >= 0) ? 1 : -1;
@@ -574,7 +577,7 @@ void Cube::run_animation()
         round_pieces_world_positions();
         s_total_angle = 0.0f;
         m_moves.pop();
-        s_state = CubeState::wait_input;
+        m_state = CubeState::wait_input;
     }
 
     s_last_time = cur_time;

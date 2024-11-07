@@ -25,7 +25,8 @@ enum Face {
 
 enum class CubeState {
     wait_input,
-    rotate_face
+    key_rotation,
+    mouse_rotation
 };
 
 struct PieceCoordinates {
@@ -61,6 +62,7 @@ private:
     glm::vec4 get_face_center_world_coord(const Face face);
 
 private:
+    CubeState m_state;
     float m_piece_size;
     float m_gap_size;
     float m_colors[6][3];
