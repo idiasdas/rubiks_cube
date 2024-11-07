@@ -19,14 +19,14 @@ void set_imgui_window(ImGuiIO& io, OpenGLContext& context);
 
 class ImguiWindow {
 private:
-    void Clear();
-    void AddLog(const char* fmt, ...);
-    void ImguiDraw(const char* title, bool* p_open = NULL);
+    void clear();
+    void add_log(const char* fmt, ...);
+    void imgui_draw(const char* title, bool* p_open = NULL);
 
 public:
     ImguiWindow();
-    void SetWindow(ImGuiIO& io, OpenGLContext& context);
-    void Draw(bool* p_open);
+    void set_window(ImGuiIO& io, OpenGLContext& context);
+    void draw(bool* p_open);
 
 private:
     ImGuiTextBuffer m_buf;

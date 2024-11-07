@@ -11,14 +11,14 @@ ImguiWindow::ImguiWindow()
 {
 }
 
-void ImguiWindow::Clear()
+void ImguiWindow::clear()
 {
     m_buf.clear();
     m_line_offsets.clear();
     m_line_offsets.push_back(0);
 }
 
-void ImguiWindow::AddLog(const char* fmt, ...)
+void ImguiWindow::add_log(const char* fmt, ...)
 {
     int old_size = m_buf.size();
     va_list args;
@@ -30,7 +30,7 @@ void ImguiWindow::AddLog(const char* fmt, ...)
             m_line_offsets.push_back(old_size + 1);
 }
 
-void ImguiWindow::ImguiDraw(const char* title, bool* p_open)
+void ImguiWindow::imgui_draw(const char* title, bool* p_open)
 {
     if (!ImGui::Begin(title, p_open)) {
         ImGui::End();
@@ -47,7 +47,7 @@ void ImguiWindow::ImguiDraw(const char* title, bool* p_open)
     if (ImGui::Button("Options"))
         ImGui::OpenPopup("Options");
     ImGui::SameLine();
-    bool clear = ImGui::Button("Clear");
+    bool clear_logs = ImGui::Button("Clear");
     ImGui::SameLine();
     bool copy = ImGui::Button("Copy");
     ImGui::SameLine();
@@ -56,8 +56,8 @@ void ImguiWindow::ImguiDraw(const char* title, bool* p_open)
     ImGui::Separator();
 
     if (ImGui::BeginChild("scrolling", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar)) {
-        if (clear)
-            Clear();
+        if (clear_logs)
+            clear();
         if (copy)
             ImGui::LogToClipboard();
 
@@ -92,7 +92,7 @@ void ImguiWindow::ImguiDraw(const char* title, bool* p_open)
     ImGui::End();
 }
 
-void ImguiWindow::SetWindow(ImGuiIO& io, OpenGLContext& context)
+void ImguiWindow::set_window(ImGuiIO& io, OpenGLContext& context)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -115,7 +115,7 @@ void ImguiWindow::SetWindow(ImGuiIO& io, OpenGLContext& context)
     glViewport(0, 0, context.get_window_width(), context.get_window_height());
 }
 
-void ImguiWindow::Draw(bool* p_open)
+void ImguiWindow::draw(bool* p_open)
 {
     // static ExampleAppLog log;
     if (!*p_open)
@@ -134,7 +134,7 @@ void ImguiWindow::Draw(bool* p_open)
         for (int n = 0; n < 5; n++) {
             const char* category = categories[counter % IM_ARRAYSIZE(categories)];
             const char* word = words[counter % IM_ARRAYSIZE(words)];
-            AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
+            add_log("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
                 ImGui::GetFrameCount(), category, ImGui::GetTime(), word);
             counter++;
         }
@@ -142,5 +142,5 @@ void ImguiWindow::Draw(bool* p_open)
     ImGui::End();
 
     // Actually call in the regular Log helper (which will Begin() into the same window as we just did)
-    ImguiDraw("Options", p_open);
+    imgui_draw("Options", p_open);
 }

@@ -99,7 +99,6 @@ int main()
     bool show_log_window = true;
 
     do {
-
         frames_count++;
         double cur_time = glfwGetTime();
         double delta = cur_time - last_time;
@@ -111,8 +110,8 @@ int main()
         }
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        imgui_window.SetWindow( io, context);
-        imgui_window.Draw(&show_log_window);
+        imgui_window.set_window(io, context);
+        imgui_window.draw(&show_log_window);
 
         cube.on_update();
         cube.draw(color_shader);
